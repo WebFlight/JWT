@@ -82,31 +82,26 @@ public class DecodedJWTParser {
 				continue;
 			}
 			
-			if (claim.asDate() != null) {
-				logger.debug("Parse claim " + value + " as Date claim.");
-				PublicClaimDate publicClaimDate = new PublicClaimDate(context);
-				publicClaimDate.setClaim_JWT(jwt);
-				publicClaimDate.setClaim(value);
-				publicClaimDate.setValue(claim.asDate());
-				continue;
-			}
-			
 			if (claim.asInt() != null) {
-				logger.debug("Parse claim " + value + " as Integer claim.");
-				PublicClaimInteger publicClaimInteger = new PublicClaimInteger(context);
-				publicClaimInteger.setClaim_JWT(jwt);
-				publicClaimInteger.setClaim(value);
-				publicClaimInteger.setValue(claim.asInt());
-				continue;
+				if (claim.asInt().doubleValue() == claim.asDouble()) {
+					logger.debug("Parse claim " + value + " as Integer claim.");
+					PublicClaimInteger publicClaimInteger = new PublicClaimInteger(context);
+					publicClaimInteger.setClaim_JWT(jwt);
+					publicClaimInteger.setClaim(value);
+					publicClaimInteger.setValue(claim.asInt());
+					continue;
+				}
 			}
 			
 			if (claim.asLong() != null) {
-				logger.debug("Parse claim " + value + " as Long claim.");
-				PublicClaimLong publicClaimLong = new PublicClaimLong(context);
-				publicClaimLong.setClaim_JWT(jwt);
-				publicClaimLong.setClaim(value);
-				publicClaimLong.setValue(claim.asLong());
-				continue;
+				if (claim.asLong().doubleValue() == claim.asDouble()) {
+					logger.debug("Parse claim " + value + " as Long claim.");
+					PublicClaimLong publicClaimLong = new PublicClaimLong(context);
+					publicClaimLong.setClaim_JWT(jwt);
+					publicClaimLong.setClaim(value);
+					publicClaimLong.setValue(claim.asLong());
+					continue;
+				}
 			}
 			
 			if (claim.asDouble() != null) {
@@ -115,6 +110,15 @@ public class DecodedJWTParser {
 				publicClaimDecimal.setClaim_JWT(jwt);
 				publicClaimDecimal.setClaim(value);
 				publicClaimDecimal.setValue(BigDecimal.valueOf(claim.asDouble()));
+				continue;
+			}
+			
+			if (claim.asDate() != null) {
+				logger.debug("Parse claim " + value + " as Date claim.");
+				PublicClaimDate publicClaimDate = new PublicClaimDate(context);
+				publicClaimDate.setClaim_JWT(jwt);
+				publicClaimDate.setClaim(value);
+				publicClaimDate.setValue(claim.asDate());
 				continue;
 			}
 				
