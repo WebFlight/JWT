@@ -18,6 +18,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.Verification;
 import com.mendix.core.Core;
 import com.mendix.logging.ILogNode;
+import com.mendix.systemwideinterfaces.core.DataValidationRuntimeException;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.webui.CustomJavaAction;
 import jwt.helpers.AlgorithmParser;
@@ -50,6 +51,21 @@ public class DecodeJWT extends CustomJavaAction<IMendixObject>
 
 		// BEGIN USER CODE
 		ILogNode logger = Core.getLogger(Constants.getLOGNODE());
+		
+		if (this.token == null || this.token.equals("")) {
+			logger.error("Cannot decode an empty token.");
+			throw new DataValidationRuntimeException("Cannot decode an empty token.");
+		}
+		
+		if (this.secret == null || this.secret.equals("")) {
+			logger.error("Cannot decode token using an empty secret.");
+			throw new DataValidationRuntimeException("Cannot decode token using an empty secret.");
+		}
+		
+		if (this.algorithm == null) {
+			logger.error("Cannot decode token using an empty algorithm.");
+			throw new DataValidationRuntimeException("Cannot decode token using an empty algorithm.");
+		}
 		
 		DecodedJWT jwt = null;
 		
@@ -93,7 +109,7 @@ public class DecodeJWT extends CustomJavaAction<IMendixObject>
 		} catch (JWTVerificationException exception){
 			logger.error("Verification of token signature/claims failed.", exception);
 			throw exception;
-		}
+		} 
 		
 		 
 		 return new DecodedJWTParser()
