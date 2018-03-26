@@ -11,7 +11,6 @@ package jwt.actions;
 
 import java.util.Iterator;
 import java.util.List;
-
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTCreator.Builder;
 import com.auth0.jwt.algorithms.Algorithm;
