@@ -13,6 +13,7 @@ Welcome to the Mendix JWT (JSON Web Token) module. This module can be used in [M
 	- [Supported](#supported)
 	- [Not supported](#not-supported)
 	- [Logging](#logging)
+	- [Dependencies](#dependencies)
 * [Development Notes](#development-notes)
 
 # Getting started
@@ -57,6 +58,13 @@ Once the JWT module is imported in your Mendix model, the Java actions can be us
 
 ## Logging
 * The JWT Log node is available for more information.
+
+## Dependencies
+The JWT module implements the auth0/java-jwt/3.3.0 library, which has the following dependencies that are included in the module package:
+* com.fasterxml.jackson.core/jackson-databind/2.9.2
+	- com.fasterxml.jackson.core/jackson-annotations/2.9.0
+	- com.fasterxml.jackson.core/jackson-core/2.9.2
+* commons-codec/commons-codec/1.11
 
 # Development notes
 * Functionality is tested using the Mendix UnitTesting module. The tests are included in the JWTTest module.
