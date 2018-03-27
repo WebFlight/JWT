@@ -68,5 +68,6 @@ The JWT module implements the auth0/java-jwt/3.3.0 library, which has the follow
 
 # Development notes
 * Functionality is tested using the Mendix UnitTesting module. The tests are included in the JWTTest module.
+* For contributions, fork the repository and issue a pull request.
 
  [1]: docs/logo.png
