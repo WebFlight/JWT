@@ -32,6 +32,9 @@ import jwt.proxies.PublicClaimString;
 import jwt.proxies.constants.Constants;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
 
+/**
+ * Generates a JWT token string from a JWT object. Make sure all inputs are specified correctly. Token generation without specifying a secret, is not allowed.
+ */
 public class GenerateJWT extends CustomJavaAction<java.lang.String>
 {
 	private IMendixObject __jwtObject;

@@ -27,6 +27,9 @@ import jwt.helpers.DecodedJWTParser;
 import jwt.proxies.constants.Constants;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
 
+/**
+ * Decodes a JWT string into a JWT object. Throws an exception when the token could not be decoded.
+ */
 public class DecodeJWT extends CustomJavaAction<IMendixObject>
 {
 	private java.lang.String token;
