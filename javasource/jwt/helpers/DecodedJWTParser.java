@@ -14,12 +14,7 @@ import com.mendix.systemwideinterfaces.core.IContext;
 
 import jwt.proxies.Audience;
 import jwt.proxies.JWT;
-import jwt.proxies.PublicClaimBoolean;
-import jwt.proxies.PublicClaimDate;
-import jwt.proxies.PublicClaimDecimal;
-import jwt.proxies.PublicClaimInteger;
-import jwt.proxies.PublicClaimLong;
-import jwt.proxies.PublicClaimString;
+import jwt.proxies.PublicClaimResponse;
 
 public class DecodedJWTParser {
 	
@@ -64,62 +59,38 @@ public class DecodedJWTParser {
 				continue;
 			}
 			
+			PublicClaimResponse publicClaimResponse = new PublicClaimResponse(context);
+			publicClaimResponse.setClaim_JWT(jwt);
+			publicClaimResponse.setClaim(value);
+			
 			if (claim.asString() != null) {
 				logger.debug("Parse claim " + value + " as String claim.");
-				PublicClaimString publicClaimString = new PublicClaimString(context);
-				publicClaimString.setClaim_JWT(jwt);
-				publicClaimString.setClaim(value);
-				publicClaimString.setValue(claim.asString());
-				continue;
+				publicClaimResponse.setValueString(claim.asString());
 			}
 			
 			if (claim.asBoolean() != null) {
 				logger.debug("Parse claim " + value + " as Boolean claim.");
-				PublicClaimBoolean publicClaimBoolean = new PublicClaimBoolean(context);
-				publicClaimBoolean.setClaim_JWT(jwt);
-				publicClaimBoolean.setClaim(value);
-				publicClaimBoolean.setValue(claim.asBoolean());
-				continue;
+				publicClaimResponse.setValueBoolean(claim.asBoolean());
 			}
 			
 			if (claim.asInt() != null) {
-				if (claim.asInt().doubleValue() == claim.asDouble()) {
-					logger.debug("Parse claim " + value + " as Integer claim.");
-					PublicClaimInteger publicClaimInteger = new PublicClaimInteger(context);
-					publicClaimInteger.setClaim_JWT(jwt);
-					publicClaimInteger.setClaim(value);
-					publicClaimInteger.setValue(claim.asInt());
-					continue;
-				}
+				logger.debug("Parse claim " + value + " as Integer claim.");
+				publicClaimResponse.setValueInteger(claim.asInt());
 			}
 			
 			if (claim.asLong() != null) {
-				if (claim.asLong().doubleValue() == claim.asDouble()) {
-					logger.debug("Parse claim " + value + " as Long claim.");
-					PublicClaimLong publicClaimLong = new PublicClaimLong(context);
-					publicClaimLong.setClaim_JWT(jwt);
-					publicClaimLong.setClaim(value);
-					publicClaimLong.setValue(claim.asLong());
-					continue;
-				}
+				logger.debug("Parse claim " + value + " as Long claim.");
+				publicClaimResponse.setValueLong(claim.asLong());
 			}
 			
 			if (claim.asDouble() != null) {
 				logger.debug("Parse claim " + value + " as Decimal claim.");
-				PublicClaimDecimal publicClaimDecimal = new PublicClaimDecimal(context);
-				publicClaimDecimal.setClaim_JWT(jwt);
-				publicClaimDecimal.setClaim(value);
-				publicClaimDecimal.setValue(BigDecimal.valueOf(claim.asDouble()));
-				continue;
+				publicClaimResponse.setValueDecimal(BigDecimal.valueOf(claim.asDouble()));
 			}
 			
 			if (claim.asDate() != null) {
 				logger.debug("Parse claim " + value + " as Date claim.");
-				PublicClaimDate publicClaimDate = new PublicClaimDate(context);
-				publicClaimDate.setClaim_JWT(jwt);
-				publicClaimDate.setClaim(value);
-				publicClaimDate.setValue(claim.asDate());
-				continue;
+				publicClaimResponse.setValueDateTime(claim.asDate());
 			}
 				
 			// Claim has a format that is not yet supported, e.g. an array.
