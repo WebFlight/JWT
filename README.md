@@ -2,6 +2,8 @@
 
 Welcome to the Mendix JWT (JSON Web Token) module. This module can be used in [Mendix](http://www.mendix.com) apps to generate and decode JWT tokens. The app uses the com.auth0/java-jwt/3.3.0 library. JSON Web Tokens are often used to perform token authentication in web services. Try it at [JWT.io](https://jwt.io)!
 
+![JWT logo][1]
+
 ## Related resources
 * auth0/java-jwt on [GitHub](https://github.com/auth0/java-jwt/)
 * [RFC 7519](https://tools.ietf.org/html/rfc7519) JSON Web Token (JWT) specs
@@ -34,16 +36,10 @@ Once the JWT module is imported in your Mendix model, the Java actions can be us
 	- Verify registered claims jti (JWT ID), sub (subject), aud (audience) and iss (issuer). The *Decode JWT* throws an exception when the token is not valid or could not be verified. Be sure to catch the exceptions in the microflow if additional logic has be executed.
 	- Check for expiry dates when decoding (exp claim), which is automatically done by the underlying JWT library
 * Public claims
-	- Encode public claims with different types:
+	- Encode and decode public claims with different types. When decoding public claims, all possible types are parsed in an object of the PublicClaimResponse entity. Type casts that are not possible by default (e.g. String to Decimal), will be left empty.
 		- Boolean
 		- DateTime
 		- Integer
-		- Long
-		- Decimal
-		- String
-	- Decode public claims with different types:
-		- Boolean
-		- Integer (DateTime will be returned as Integer, because UNIX time stamp is used in JWT)
 		- Long
 		- Decimal
 		- String
@@ -70,4 +66,4 @@ The JWT module implements the auth0/java-jwt/3.3.0 library, which has the follow
 * Functionality is tested using the Mendix UnitTesting module. The tests are included in the JWTTest module.
 * For contributions, fork the repository and issue a pull request.
 
- [1]: docs/logo.png
+[1]: docs/JWT.png
