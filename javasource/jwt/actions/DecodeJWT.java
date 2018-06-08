@@ -26,7 +26,6 @@ import jwt.helpers.AlgorithmParser;
 import jwt.helpers.AudienceListToStringArrayConverter;
 import jwt.helpers.DecodedJWTParser;
 import jwt.helpers.RSAKeyPairReader;
-import jwt.proxies.ENU_Algorithm;
 import jwt.proxies.constants.Constants;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
 
