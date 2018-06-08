@@ -10,6 +10,7 @@
 package jwt.actions;
 
 import java.io.UnsupportedEncodingException;
+import java.security.interfaces.RSAPublicKey;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -24,6 +25,7 @@ import com.mendix.webui.CustomJavaAction;
 import jwt.helpers.AlgorithmParser;
 import jwt.helpers.AudienceListToStringArrayConverter;
 import jwt.helpers.DecodedJWTParser;
+import jwt.helpers.RSAKeyPairReader;
 import jwt.proxies.constants.Constants;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
 
@@ -37,20 +39,25 @@ public class DecodeJWT extends CustomJavaAction<IMendixObject>
 	private jwt.proxies.ENU_Algorithm algorithm;
 	private IMendixObject __claimsToVerify;
 	private jwt.proxies.JWT claimsToVerify;
+	private IMendixObject __publicKey;
+	private jwt.proxies.PublicKey publicKey;
 
-	public DecodeJWT(IContext context, java.lang.String token, java.lang.String secret, java.lang.String algorithm, IMendixObject claimsToVerify)
+	public DecodeJWT(IContext context, java.lang.String token, java.lang.String secret, java.lang.String algorithm, IMendixObject claimsToVerify, IMendixObject publicKey)
 	{
 		super(context);
 		this.token = token;
 		this.secret = secret;
 		this.algorithm = algorithm == null ? null : jwt.proxies.ENU_Algorithm.valueOf(algorithm);
 		this.__claimsToVerify = claimsToVerify;
+		this.__publicKey = publicKey;
 	}
 
 	@Override
 	public IMendixObject executeAction() throws Exception
 	{
 		this.claimsToVerify = __claimsToVerify == null ? null : jwt.proxies.JWT.initialize(getContext(), __claimsToVerify);
+
+		this.publicKey = __publicKey == null ? null : jwt.proxies.PublicKey.initialize(getContext(), __publicKey);
 
 		// BEGIN USER CODE
 		ILogNode logger = Core.getLogger(Constants.getLOGNODE());
@@ -60,20 +67,22 @@ public class DecodeJWT extends CustomJavaAction<IMendixObject>
 			throw new DataValidationRuntimeException("Cannot decode an empty token.");
 		}
 		
-		if (this.secret == null || this.secret.equals("")) {
-			logger.error("Cannot decode token using an empty secret.");
-			throw new DataValidationRuntimeException("Cannot decode token using an empty secret.");
-		}
-		
 		if (this.algorithm == null) {
 			logger.error("Cannot decode token using an empty algorithm.");
 			throw new DataValidationRuntimeException("Cannot decode token using an empty algorithm.");
 		}
 		
+		RSAPublicKey rsaPublicKey = null;
+		
+		if(publicKey != null) {
+			RSAKeyPairReader rsaKeyPairReader = new RSAKeyPairReader();
+			rsaPublicKey = rsaKeyPairReader.getPublicKey(this.context(), publicKey);
+		}
+		
 		DecodedJWT jwt = null;
 		
 		try {
-			Algorithm alg = new AlgorithmParser().parseAlgorithm(algorithm, secret);
+			Algorithm alg = new AlgorithmParser().parseAlgorithm(algorithm, secret, rsaPublicKey, null);
 			logger.debug("Starting to decode JWT token with algorithm " + alg.getName() + ".");
 			
 			Verification verification = JWT.require(alg);
