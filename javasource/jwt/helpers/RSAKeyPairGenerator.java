@@ -25,7 +25,6 @@ public class RSAKeyPairGenerator {
 			RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
 			
 			jwt.proxies.KeyPair keyPairObject = new jwt.proxies.KeyPair(context);
-			Core.commit(context, keyPairObject.getMendixObject());
 			
 			jwt.proxies.PublicKey publicKeyObject = new jwt.proxies.PublicKey(context);
 			publicKeyObject.setPublicKey_KeyPair(context, keyPairObject);
@@ -34,6 +33,8 @@ public class RSAKeyPairGenerator {
 			jwt.proxies.PrivateKey privateKeyObject = new jwt.proxies.PrivateKey(context);
 			privateKeyObject.setPrivateKey_KeyPair(context, keyPairObject);
 			Core.commit(context, privateKeyObject.getMendixObject());
+			
+			Core.commit(context, keyPairObject.getMendixObject());
 			
 			X509EncodedKeySpec x509EncodedKeySpec = new X509EncodedKeySpec(
 					publicKey.getEncoded());

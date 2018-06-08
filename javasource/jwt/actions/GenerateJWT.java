@@ -9,6 +9,7 @@
 
 package jwt.actions;
 
+import java.security.interfaces.RSAPrivateKey;
 import java.util.Iterator;
 import java.util.List;
 import com.auth0.jwt.JWT;
@@ -21,6 +22,7 @@ import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.webui.CustomJavaAction;
 import jwt.helpers.AlgorithmParser;
 import jwt.helpers.AudienceListToStringArrayConverter;
+import jwt.helpers.RSAKeyPairReader;
 import jwt.helpers.RegisteredClaimIdentifier;
 import jwt.proxies.PublicClaim;
 import jwt.proxies.PublicClaimBoolean;
@@ -41,19 +43,24 @@ public class GenerateJWT extends CustomJavaAction<java.lang.String>
 	private jwt.proxies.JWT jwtObject;
 	private java.lang.String secret;
 	private jwt.proxies.ENU_Algorithm algorithm;
+	private IMendixObject __privateKey;
+	private jwt.proxies.PrivateKey privateKey;
 
-	public GenerateJWT(IContext context, IMendixObject jwtObject, java.lang.String secret, java.lang.String algorithm)
+	public GenerateJWT(IContext context, IMendixObject jwtObject, java.lang.String secret, java.lang.String algorithm, IMendixObject privateKey)
 	{
 		super(context);
 		this.__jwtObject = jwtObject;
 		this.secret = secret;
 		this.algorithm = algorithm == null ? null : jwt.proxies.ENU_Algorithm.valueOf(algorithm);
+		this.__privateKey = privateKey;
 	}
 
 	@Override
 	public java.lang.String executeAction() throws Exception
 	{
 		this.jwtObject = __jwtObject == null ? null : jwt.proxies.JWT.initialize(getContext(), __jwtObject);
+
+		this.privateKey = __privateKey == null ? null : jwt.proxies.PrivateKey.initialize(getContext(), __privateKey);
 
 		// BEGIN USER CODE
 		ILogNode logger = Core.getLogger(Constants.getLOGNODE());
@@ -68,7 +75,14 @@ public class GenerateJWT extends CustomJavaAction<java.lang.String>
 			throw new DataValidationRuntimeException("Input algorithm for Generate JWT is empty.");
 		}
 		
-		Algorithm alg = new AlgorithmParser().parseAlgorithm(algorithm, secret);
+		RSAPrivateKey rsaPrivateKey = null;
+		
+		if(privateKey != null) {
+			RSAKeyPairReader rsaKeyPairReader = new RSAKeyPairReader();
+			rsaPrivateKey = rsaKeyPairReader.getPrivateKey(this.context(), privateKey);
+		}
+		
+		Algorithm alg = new AlgorithmParser().parseAlgorithm(algorithm, secret, null, rsaPrivateKey);
 		logger.debug("Starting to gerenate JWT token with algorithm " + alg.getName() + ".");
 		
 		Builder builder = JWT.create()

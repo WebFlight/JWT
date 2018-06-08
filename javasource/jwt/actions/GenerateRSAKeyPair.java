@@ -14,6 +14,9 @@ import com.mendix.webui.CustomJavaAction;
 import jwt.helpers.RSAKeyPairGenerator;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
 
+/**
+ * Generates a 2048 bits RSA key pair. The public key is stored in X509 format and the private key in PKCS8 format.
+ */
 public class GenerateRSAKeyPair extends CustomJavaAction<IMendixObject>
 {
 	public GenerateRSAKeyPair(IContext context)
