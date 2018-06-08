@@ -48,8 +48,9 @@ Once the JWT module is imported in your Mendix model, the Java actions can be us
 		- String
 * RSA Key Pair generation
 	- Generate public/private key pairs in Mendix (public key binary X.509 format and private key binary PKCS8 format)
-	- Generated key pairs will be persisted in the database (necessary for binary storage). Pay attention to security
-	- Recommended not to generate keypairs on runtime to prevent performance issues
+	- Recommended not to generate new keypairs on runtime to prevent performance issues
+	- Instantiate public/private keys based on known key specifications (modulus, public and private key exponent)
+	- Key pairs will be persisted in the database (necessary for binary storage). Pay attention to security
 	- A good solution for key storage: use a model constant and enter the keys as strings (BASE64 encoded)
 
 ## Not supported
