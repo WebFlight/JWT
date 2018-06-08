@@ -30,6 +30,9 @@ Once the JWT module is imported in your Mendix model, the Java actions can be us
 	- HMAC with SHA-256
 	- HMAC with SHA-384
 	- HMAC with SHA-512
+	- RSASSA-PKCS1-v1_5 with SHA-256
+	- RSASSA-PKCS1-v1_5 with SHA-384
+	- RSASSA-PKCS1-v1_5 with SHA-512
 * Registered claims according to [RFC 7519](https://tools.ietf.org/html/rfc7519)
 	- Encoding all registered claims (including array of audiences)
 	- Decoding all registered claims (including array of audiences)
@@ -43,10 +46,14 @@ Once the JWT module is imported in your Mendix model, the Java actions can be us
 		- Long
 		- Decimal
 		- String
+* RSA Key Pair generation
+	- Generate public/private key pairs in Mendix (public key binary X.509 format and private key binary PKCS8 format)
+	- Generated key pairs will be persisted in the database (necessary for binary storage). Pay attention to security
+	- Recommended not to generate keypairs on runtime to prevent performance issues
+	- A good solution for key storage: use a model constant and enter the keys as strings (BASE64 encoded)
 
 ## Not supported
 * Algorithms
-	- RSA 
 	- ECDSA
 * Encoding public claims containing an array of values
 * Decoding public claims containing an array of values
