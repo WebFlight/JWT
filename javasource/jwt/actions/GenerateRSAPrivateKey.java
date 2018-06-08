@@ -15,7 +15,6 @@ import java.security.KeyFactory;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.RSAPrivateKeySpec;
-
 import com.mendix.core.Core;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.webui.CustomJavaAction;
@@ -41,6 +40,7 @@ public class GenerateRSAPrivateKey extends CustomJavaAction<IMendixObject>
 		RSAPrivateKeySpec privateKeySpec = new RSAPrivateKeySpec(new BigInteger(modulus), new BigInteger(privateExponent));
 		RSAPrivateKey rsaPrivateKey = (RSAPrivateKey) keyFactory.generatePrivate(privateKeySpec);
 		PKCS8EncodedKeySpec pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(rsaPrivateKey.getEncoded());
+		
 		jwt.proxies.PrivateKey privateKey = new jwt.proxies.PrivateKey(this.context());
 		Core.commit(this.context(), privateKey.getMendixObject());
 		Core.storeFileDocumentContent(this.context(), privateKey.getMendixObject(), new ByteArrayInputStream(pkcs8EncodedKeySpec.getEncoded()));

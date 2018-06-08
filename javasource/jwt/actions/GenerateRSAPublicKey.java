@@ -15,7 +15,6 @@ import java.security.KeyFactory;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.RSAPublicKeySpec;
 import java.security.spec.X509EncodedKeySpec;
-
 import com.mendix.core.Core;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.webui.CustomJavaAction;
@@ -41,6 +40,7 @@ public class GenerateRSAPublicKey extends CustomJavaAction<IMendixObject>
 		RSAPublicKeySpec publicKeySpec = new RSAPublicKeySpec(new BigInteger(modulus), new BigInteger(publicExponent));
 		RSAPublicKey rsaPublicKey = (RSAPublicKey) keyFactory.generatePublic(publicKeySpec);
 		X509EncodedKeySpec x509EncodedKeySpec = new X509EncodedKeySpec(rsaPublicKey.getEncoded());
+		
 		jwt.proxies.PublicKey publicKey = new jwt.proxies.PublicKey(this.context());
 		Core.commit(this.context(), publicKey.getMendixObject());
 		Core.storeFileDocumentContent(this.context(), publicKey.getMendixObject(), new ByteArrayInputStream(x509EncodedKeySpec.getEncoded()));
