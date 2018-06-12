@@ -15,9 +15,12 @@ import java.security.spec.X509EncodedKeySpec;
 import com.mendix.core.Core;
 import com.mendix.systemwideinterfaces.core.IContext;
 
+import jwt.proxies.JWTRSAPrivateKey;
+import jwt.proxies.JWTRSAPublicKey;
+
 public class RSAKeyPairReader {
 	
-	public RSAPublicKey getPublicKey(IContext context, jwt.proxies.PublicKey publicKeyObject) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
+	public RSAPublicKey getPublicKey(IContext context, JWTRSAPublicKey publicKeyObject) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
 		InputStream inputStream = Core.getFileDocumentContent(context, publicKeyObject.getMendixObject());
 		byte[] encodedPublicKey = new byte[inputStream.available()];
 		inputStream.read(encodedPublicKey);
@@ -29,7 +32,7 @@ public class RSAKeyPairReader {
 		return (RSAPublicKey) publicKey;
 	}
 	
-	public RSAPrivateKey getPrivateKey(IContext context, jwt.proxies.PrivateKey privateKeyObject) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
+	public RSAPrivateKey getPrivateKey(IContext context, JWTRSAPrivateKey privateKeyObject) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
 		InputStream inputStream = Core.getFileDocumentContent(context, privateKeyObject.getMendixObject());
 		byte[] encodedPrivateKey = new byte[inputStream.available()];
 		inputStream.read(encodedPrivateKey);

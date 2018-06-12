@@ -40,7 +40,7 @@ public class DecodeJWT extends CustomJavaAction<IMendixObject>
 	private IMendixObject __claimsToVerify;
 	private jwt.proxies.JWT claimsToVerify;
 	private IMendixObject __publicKey;
-	private jwt.proxies.PublicKey publicKey;
+	private jwt.proxies.JWTRSAPublicKey publicKey;
 
 	public DecodeJWT(IContext context, java.lang.String token, java.lang.String secret, java.lang.String algorithm, IMendixObject claimsToVerify, IMendixObject publicKey)
 	{
@@ -57,7 +57,7 @@ public class DecodeJWT extends CustomJavaAction<IMendixObject>
 	{
 		this.claimsToVerify = __claimsToVerify == null ? null : jwt.proxies.JWT.initialize(getContext(), __claimsToVerify);
 
-		this.publicKey = __publicKey == null ? null : jwt.proxies.PublicKey.initialize(getContext(), __publicKey);
+		this.publicKey = __publicKey == null ? null : jwt.proxies.JWTRSAPublicKey.initialize(getContext(), __publicKey);
 
 		// BEGIN USER CODE
 		ILogNode logger = Core.getLogger(Constants.getLOGNODE());
