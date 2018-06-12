@@ -44,7 +44,7 @@ public class GenerateJWT extends CustomJavaAction<java.lang.String>
 	private java.lang.String secret;
 	private jwt.proxies.ENU_Algorithm algorithm;
 	private IMendixObject __privateKey;
-	private jwt.proxies.PrivateKey privateKey;
+	private jwt.proxies.JWTRSAPrivateKey privateKey;
 
 	public GenerateJWT(IContext context, IMendixObject jwtObject, java.lang.String secret, java.lang.String algorithm, IMendixObject privateKey)
 	{
@@ -60,7 +60,7 @@ public class GenerateJWT extends CustomJavaAction<java.lang.String>
 	{
 		this.jwtObject = __jwtObject == null ? null : jwt.proxies.JWT.initialize(getContext(), __jwtObject);
 
-		this.privateKey = __privateKey == null ? null : jwt.proxies.PrivateKey.initialize(getContext(), __privateKey);
+		this.privateKey = __privateKey == null ? null : jwt.proxies.JWTRSAPrivateKey.initialize(getContext(), __privateKey);
 
 		// BEGIN USER CODE
 		ILogNode logger = Core.getLogger(Constants.getLOGNODE());

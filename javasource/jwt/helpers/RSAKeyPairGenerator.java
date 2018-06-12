@@ -13,9 +13,13 @@ import com.mendix.core.Core;
 import com.mendix.core.CoreException;
 import com.mendix.systemwideinterfaces.core.IContext;
 
+import jwt.proxies.JWTRSAKeyPair;
+import jwt.proxies.JWTRSAPrivateKey;
+import jwt.proxies.JWTRSAPublicKey;
+
 public class RSAKeyPairGenerator {
 	
-	public jwt.proxies.KeyPair generate(IContext context, int keySize) throws NoSuchAlgorithmException, CoreException {
+	public JWTRSAKeyPair generate(IContext context, int keySize) throws NoSuchAlgorithmException, CoreException {
 		KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
 		keyPairGenerator.initialize(keySize);
 		KeyPair keyPair = keyPairGenerator.genKeyPair();
@@ -23,14 +27,14 @@ public class RSAKeyPairGenerator {
 		RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
 		RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
 		
-		jwt.proxies.KeyPair keyPairObject = new jwt.proxies.KeyPair(context);
+		JWTRSAKeyPair keyPairObject = new JWTRSAKeyPair(context);
 		
-		jwt.proxies.PublicKey publicKeyObject = new jwt.proxies.PublicKey(context);
-		publicKeyObject.setPublicKey_KeyPair(context, keyPairObject);
+		JWTRSAPublicKey publicKeyObject = new JWTRSAPublicKey(context);
+		publicKeyObject.setJWTRSAPublicKey_JWTRSAKeyPair(context, keyPairObject);
 		Core.commit(context, publicKeyObject.getMendixObject());
 		
-		jwt.proxies.PrivateKey privateKeyObject = new jwt.proxies.PrivateKey(context);
-		privateKeyObject.setPrivateKey_KeyPair(context, keyPairObject);
+		JWTRSAPrivateKey privateKeyObject = new JWTRSAPrivateKey(context);
+		privateKeyObject.setJWTRSAPrivateKey_JWTRSAKeyPair(context, keyPairObject);
 		Core.commit(context, privateKeyObject.getMendixObject());
 		
 		Core.commit(context, keyPairObject.getMendixObject());
