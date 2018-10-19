@@ -41,6 +41,7 @@ public class DecodedJWTParser {
 		jwt.setiat(decodedJWT.getIssuedAt());
 		jwt.setexp(decodedJWT.getExpiresAt());
 		jwt.setjti(decodedJWT.getId());
+		jwt.setkid(decodedJWT.getKeyId());
 		
 		Map<String, Claim> claimMap = decodedJWT.getClaims();
 		Set<Entry<String, Claim>> claimEntrySet = claimMap.entrySet();
@@ -91,10 +92,11 @@ public class DecodedJWTParser {
 			if (claim.asDate() != null) {
 				logger.debug("Parse claim " + value + " as Date claim.");
 				publicClaimResponse.setValueDateTime(claim.asDate());
-			}
-				
+			}	
 			// Claim has a format that is not yet supported, e.g. an array.
-			logger.warn("Could not parse Claim " + value + " while decoding token. Format is not supported.");
+			if (claim.asString() == null && claim.asBoolean() == null && claim.asInt() == null && claim.asLong() == null && claim.asDouble() == null && claim.asDate() == null){
+				logger.warn("Could not parse Claim " + value + " while decoding token. Format is not supported.");
+			}
 			
 		}
 		
