@@ -30,7 +30,7 @@ import jwt.proxies.constants.Constants;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
 
 /**
- * Decodes a JWT string into a JWT object. Throws an exception when the token could not be decoded.
+ * Decodes a JWT string into a JWT object and verifies the signature. Throws an exception when the token could not be decoded or verified.
  */
 public class DecodeVerifyJWT extends CustomJavaAction<IMendixObject>
 {
