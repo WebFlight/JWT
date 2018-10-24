@@ -19,7 +19,7 @@ Welcome to the Mendix JWT (JSON Web Token) module. This module can be used in [M
 * [Development Notes](#development-notes)
 
 # Getting started
-1. The *JWT* module can be downloaded from within the Mendix Business Modeler in the Mendix Appstore into any model that is build with Mendix 7.12.0+.
+1. The *JWT* module can be downloaded from within the Mendix Business Modeler in the Mendix Appstore into any model that is build with Mendix 7.13.1+.
 2. Apply the Java actions in the _USE_ME folder or use the *Generate JWT* and *Decode JWT* activities in the Toolbox in the Integration activities category.
 
 # Application
