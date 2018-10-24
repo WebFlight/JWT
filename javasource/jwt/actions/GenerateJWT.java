@@ -93,6 +93,12 @@ public class GenerateJWT extends CustomJavaAction<java.lang.String>
 		        .withNotBefore(jwtObject.getnbf())
 		        .withIssuedAt(jwtObject.getiat());
 		
+		String kid = jwtObject.getkid();
+		
+		if (kid != null) {
+			builder.withKeyId(kid);
+		}
+		
 		String[] audienceList = new AudienceListToStringArrayConverter().convert(this.context(), jwtObject);
 		logger.debug("Adding audience claim with " + audienceList.length + " audiences.");
 		builder.withAudience(audienceList);
