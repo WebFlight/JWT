@@ -22,7 +22,7 @@ public class RSAKeyPairGenerator {
 	public JWTRSAKeyPair generate(IContext context, int keySize) throws NoSuchAlgorithmException, CoreException {
 		KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
 		keyPairGenerator.initialize(keySize);
-		KeyPair keyPair = keyPairGenerator.genKeyPair();
+		KeyPair keyPair = keyPairGenerator.genKeyPair(); 
 		
 		RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
 		RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
