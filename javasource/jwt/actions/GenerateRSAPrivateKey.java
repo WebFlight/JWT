@@ -14,8 +14,6 @@ import java.math.BigInteger;
 import java.security.KeyFactory;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.spec.RSAPrivateKeySpec;
-import org.bouncycastle.asn1.ASN1Encodable;
-import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
 import com.mendix.core.Core;
 import com.mendix.systemwideinterfaces.core.IContext;
@@ -46,9 +44,7 @@ public class GenerateRSAPrivateKey extends CustomJavaAction<IMendixObject>
 		RSAPrivateKeySpec privateKeySpec = new RSAPrivateKeySpec(new BigInteger(modulus), new BigInteger(privateExponent));
 		RSAPrivateKey rsaPrivateKey = (RSAPrivateKey) keyFactory.generatePrivate(privateKeySpec);
 		PrivateKeyInfo privateKeyInfo = PrivateKeyInfo.getInstance(rsaPrivateKey.getEncoded());
-		ASN1Encodable encodable = privateKeyInfo.parsePrivateKey();
-		ASN1Primitive primitive = encodable.toASN1Primitive();
-		byte[] privateKeyPKCS1 = primitive.getEncoded();
+		byte[] privateKeyPKCS1 = privateKeyInfo.toASN1Primitive().getEncoded();
 		
 		JWTRSAPrivateKey privateKey = new JWTRSAPrivateKey(this.context());
 		Core.commit(this.context(), privateKey.getMendixObject());

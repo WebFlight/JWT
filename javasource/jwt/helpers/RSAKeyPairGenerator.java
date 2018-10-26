@@ -9,8 +9,6 @@ import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.X509EncodedKeySpec;
 
-import org.bouncycastle.asn1.ASN1Encodable;
-import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
 
 import com.mendix.core.Core;
@@ -49,9 +47,7 @@ public class RSAKeyPairGenerator {
 		byte[] privateKeyPKCS1 = null;
 		
 		PrivateKeyInfo privateKeyInfo = PrivateKeyInfo.getInstance(privateKey.getEncoded());
-		ASN1Encodable encodable = privateKeyInfo.parsePrivateKey();
-		ASN1Primitive primitive = encodable.toASN1Primitive();
-		privateKeyPKCS1 = primitive.getEncoded();
+		privateKeyPKCS1 = privateKeyInfo.toASN1Primitive().getEncoded();
 		
 		Core.storeFileDocumentContent(context, publicKeyObject.getMendixObject(), "public" + keyPairObject.getKeyPairId(context) + ".key", new ByteArrayInputStream(x509EncodedKeySpec.getEncoded()));
 		Core.storeFileDocumentContent(context, privateKeyObject.getMendixObject(), "private" + keyPairObject.getKeyPairId(context) + ".key", new ByteArrayInputStream(privateKeyPKCS1));
