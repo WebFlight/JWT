@@ -13,8 +13,8 @@ import java.io.ByteArrayInputStream;
 import java.math.BigInteger;
 import java.security.KeyFactory;
 import java.security.interfaces.RSAPrivateKey;
-import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.RSAPrivateKeySpec;
+import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
 import com.mendix.core.Core;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.webui.CustomJavaAction;
@@ -43,11 +43,12 @@ public class GenerateRSAPrivateKey extends CustomJavaAction<IMendixObject>
 		KeyFactory keyFactory = KeyFactory.getInstance("RSA");
 		RSAPrivateKeySpec privateKeySpec = new RSAPrivateKeySpec(new BigInteger(modulus), new BigInteger(privateExponent));
 		RSAPrivateKey rsaPrivateKey = (RSAPrivateKey) keyFactory.generatePrivate(privateKeySpec);
-		PKCS8EncodedKeySpec pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(rsaPrivateKey.getEncoded());
+		PrivateKeyInfo privateKeyInfo = PrivateKeyInfo.getInstance(rsaPrivateKey.getEncoded());
+		byte[] privateKeyPKCS1 = privateKeyInfo.toASN1Primitive().getEncoded();
 		
 		JWTRSAPrivateKey privateKey = new JWTRSAPrivateKey(this.context());
 		Core.commit(this.context(), privateKey.getMendixObject());
-		Core.storeFileDocumentContent(this.context(), privateKey.getMendixObject(), new ByteArrayInputStream(pkcs8EncodedKeySpec.getEncoded()));
+		Core.storeFileDocumentContent(this.context(), privateKey.getMendixObject(), new ByteArrayInputStream(privateKeyPKCS1));
 		return privateKey.getMendixObject();
 		// END USER CODE
 	}
