@@ -9,8 +9,10 @@ import java.security.PublicKey;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
-import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+
+import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
+import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
 
 import com.mendix.core.Core;
 import com.mendix.systemwideinterfaces.core.IContext;
@@ -37,9 +39,10 @@ public class RSAKeyPairReader {
 		byte[] encodedPrivateKey = new byte[inputStream.available()];
 		inputStream.read(encodedPrivateKey);
 		
-		KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-		PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(encodedPrivateKey);
-		PrivateKey privateKey = keyFactory.generatePrivate(privateKeySpec);
+		PrivateKeyInfo privateKeyInfo = PrivateKeyInfo.getInstance(encodedPrivateKey);
+		
+		JcaPEMKeyConverter jcaPEMKeyConverter = new JcaPEMKeyConverter();
+		PrivateKey privateKey = jcaPEMKeyConverter.getPrivateKey(privateKeyInfo);
 		
 		return (RSAPrivateKey) privateKey;
 	}

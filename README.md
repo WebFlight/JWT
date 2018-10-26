@@ -47,11 +47,11 @@ Once the JWT module is imported in your Mendix model, the Java actions can be us
 		- Decimal
 		- String
 * RSA Key Pair generation
-	- Generate public/private key pairs in Mendix (public key binary X.509 format and private key binary PKCS8 format)
+	- Generate public/private key pairs in Mendix (public key binary X.509 format and private key binary PKCS1 format)
 	- Recommended not to generate new keypairs on runtime to prevent performance issues
 	- Instantiate public/private keys based on known key specifications (modulus, public and private key exponent)
 	- Key pairs will be persisted in the database (necessary for binary storage). Pay attention to security
-	- A good solution for key storage: use a model constant and enter the keys as strings (BASE64 encoded)
+	- Convert PEM certificate format (BASE64 String) to DER format (binary)
 
 ## Not supported
 * Algorithms
@@ -69,9 +69,12 @@ The JWT module implements the auth0/java-jwt/3.3.0 library, which has the follow
 	- com.fasterxml.jackson.core/jackson-annotations/2.9.0
 	- com.fasterxml.jackson.core/jackson-core/2.9.2
 * commons-codec/commons-codec/1.11
+* org.bouncycastle/bcpkix-jdk15on/1.60
+* org.bouncycastle/bcprov-jdk15on/1.60
 
 # Development notes
 * Functionality is tested using the Mendix UnitTesting module. The tests are included in the JWTTest module.
-* For contributions, fork the repository and issue a pull request.
+* Use Git Flow
+* For contributions, fork the repository and issue a pull request to the develop branch
 
 [1]: docs/JWT.png
