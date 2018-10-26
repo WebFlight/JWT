@@ -15,28 +15,31 @@ import java.io.Reader;
 import java.io.StringReader;
 import org.bouncycastle.util.io.pem.PemObject;
 import org.bouncycastle.util.io.pem.PemReader;
-
 import com.mendix.core.Core;
 import com.mendix.core.CoreException;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.webui.CustomJavaAction;
-
 import jwt.proxies.JWTRSAPrivateKey;
 import jwt.proxies.JWTRSAPublicKey;
 import system.proxies.FileDocument;
-
 import com.mendix.systemwideinterfaces.core.IMendixObject;
+import com.mendix.systemwideinterfaces.core.UserException;
 
+/**
+ * Specify key type (public or private) and enter the String for the PEM file. The action returns a FileDocument. When key type is public, it returns a JWTRSAPublicKey object, if private it returns a JWTRSAPrivateKey. If key type is empty, an exception is thrown.
+ */
 public class ConvertPEMtoDER extends CustomJavaAction<IMendixObject>
 {
 	private java.lang.String pemKey;
 	private jwt.proxies.ENU_KeyType keyType;
+	private java.lang.String outputFileName;
 
-	public ConvertPEMtoDER(IContext context, java.lang.String pemKey, java.lang.String keyType)
+	public ConvertPEMtoDER(IContext context, java.lang.String pemKey, java.lang.String keyType, java.lang.String outputFileName)
 	{
 		super(context);
 		this.pemKey = pemKey;
 		this.keyType = keyType == null ? null : jwt.proxies.ENU_KeyType.valueOf(keyType);
+		this.outputFileName = outputFileName;
 	}
 
 	@Override
@@ -44,6 +47,16 @@ public class ConvertPEMtoDER extends CustomJavaAction<IMendixObject>
 	{
 		// BEGIN USER CODE
 		IContext context = getContext();
+		
+		
+		if (pemKey == null || pemKey.equals("")) {
+			throw new UserException(UserException.ExceptionCategory.DataValidation, "Please enter a PEM certificate string for conversion to DER.");
+		}
+		
+		if (keyType == null) {
+			throw new UserException(UserException.ExceptionCategory.DataValidation, "Please specify a key type when converting certificates.");
+		}
+		
 		Reader reader = new StringReader(pemKey);
 		PemReader pemReader = new PemReader(reader);
 		PemObject pemObject = pemReader.readPemObject();
@@ -62,10 +75,17 @@ public class ConvertPEMtoDER extends CustomJavaAction<IMendixObject>
 				derKey = new JWTRSAPublicKey(context);
 				break;
 				default:
-					throw new CoreException("Please specify a key type.");
+					throw new UserException(UserException.ExceptionCategory.DataValidation, "Could not determine keyType for conversion to DER.");
 			}
 			
-			Core.storeFileDocumentContent(context, derKey.getMendixObject(), inputStream);
+			if (outputFileName == null || outputFileName.equals("")) {
+				Core.storeFileDocumentContent(context, derKey.getMendixObject(), inputStream);
+			}
+			
+			if (outputFileName != null && !outputFileName.equals("")) {
+				Core.storeFileDocumentContent(context, derKey.getMendixObject(), outputFileName, inputStream);
+			}
+			
 		} finally {
 			if (pemReader != null) {
 				pemReader.close();
