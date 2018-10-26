@@ -16,7 +16,6 @@ import java.io.StringReader;
 import org.bouncycastle.util.io.pem.PemObject;
 import org.bouncycastle.util.io.pem.PemReader;
 import com.mendix.core.Core;
-import com.mendix.core.CoreException;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.webui.CustomJavaAction;
 import jwt.proxies.JWTRSAPrivateKey;
@@ -79,7 +78,7 @@ public class ConvertPEMtoDER extends CustomJavaAction<IMendixObject>
 			}
 			
 			if (outputFileName == null || outputFileName.equals("")) {
-				Core.storeFileDocumentContent(context, derKey.getMendixObject(), inputStream);
+				Core.storeFileDocumentContent(context, derKey.getMendixObject(), "key.der", inputStream);
 			}
 			
 			if (outputFileName != null && !outputFileName.equals("")) {
