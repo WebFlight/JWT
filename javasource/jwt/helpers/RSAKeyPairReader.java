@@ -11,6 +11,7 @@ import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 
+import org.apache.commons.io.IOUtils;
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
 import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
 
@@ -19,13 +20,13 @@ import com.mendix.systemwideinterfaces.core.IContext;
 
 import jwt.proxies.JWTRSAPrivateKey;
 import jwt.proxies.JWTRSAPublicKey;
+import sun.misc.IOUtils;
 
 public class RSAKeyPairReader {
 	
 	public RSAPublicKey getPublicKey(IContext context, JWTRSAPublicKey publicKeyObject) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
 		InputStream inputStream = Core.getFileDocumentContent(context, publicKeyObject.getMendixObject());
-		byte[] encodedPublicKey = new byte[inputStream.available()];
-		inputStream.read(encodedPublicKey);
+		byte[] encodedPublicKey = IOUtils.toByteArray(inputStream);
 		
 		KeyFactory keyFactory = KeyFactory.getInstance("RSA");
 		X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(encodedPublicKey);
