@@ -24,7 +24,6 @@ public class RSAKeyPairReader {
 	public RSAPublicKey getPublicKey(IContext context, JWTRSAPublicKey publicKeyObject) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
 		try(InputStream inputStream = Core.getFileDocumentContent(context, publicKeyObject.getMendixObject())){
 		
-		//byte[] encodedPublicKey = IOUtils.toByteArray(inputStream);
 		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 	    int nRead;
 	    byte[] data = new byte[1024];
