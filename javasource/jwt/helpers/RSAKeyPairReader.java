@@ -1,5 +1,6 @@
 package jwt.helpers;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.KeyFactory;
@@ -23,27 +24,43 @@ import jwt.proxies.JWTRSAPublicKey;
 public class RSAKeyPairReader {
 	
 	public RSAPublicKey getPublicKey(IContext context, JWTRSAPublicKey publicKeyObject) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
-		InputStream inputStream = Core.getFileDocumentContent(context, publicKeyObject.getMendixObject());
-		byte[] encodedPublicKey = new byte[inputStream.available()];
-		inputStream.read(encodedPublicKey);
-		
-		KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-		X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(encodedPublicKey);
-		PublicKey publicKey = keyFactory.generatePublic(publicKeySpec);
-		
-		return (RSAPublicKey) publicKey;
+		try (	InputStream inputStream = Core.getFileDocumentContent(context, publicKeyObject.getMendixObject());
+				ByteArrayOutputStream buffer = new ByteArrayOutputStream();) {
+			int nRead;
+		    byte[] data = new byte[4096];
+		    while ((nRead = inputStream.read(data, 0, data.length)) != -1) {
+		        buffer.write(data, 0, nRead);
+		    }
+			 
+		    buffer.flush();
+		    byte[] encodedPublicKey = buffer.toByteArray();
+			
+			KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+			X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(encodedPublicKey);
+			PublicKey publicKey = keyFactory.generatePublic(publicKeySpec);
+			
+			return (RSAPublicKey) publicKey;
+		}
 	}
 	
 	public RSAPrivateKey getPrivateKey(IContext context, JWTRSAPrivateKey privateKeyObject) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
-		InputStream inputStream = Core.getFileDocumentContent(context, privateKeyObject.getMendixObject());
-		byte[] encodedPrivateKey = new byte[inputStream.available()];
-		inputStream.read(encodedPrivateKey);
-		
-		PrivateKeyInfo privateKeyInfo = PrivateKeyInfo.getInstance(encodedPrivateKey);
-		
-		JcaPEMKeyConverter jcaPEMKeyConverter = new JcaPEMKeyConverter();
-		PrivateKey privateKey = jcaPEMKeyConverter.getPrivateKey(privateKeyInfo);
-		
-		return (RSAPrivateKey) privateKey;
+		try (	InputStream inputStream = Core.getFileDocumentContent(context, privateKeyObject.getMendixObject());
+				ByteArrayOutputStream buffer = new ByteArrayOutputStream();) {
+			int nRead;
+		    byte[] data = new byte[4096];
+		    while ((nRead = inputStream.read(data, 0, data.length)) != -1) {
+		        buffer.write(data, 0, nRead);
+		    }
+			 
+		    buffer.flush();
+		    byte[] encodedPrivateKey = buffer.toByteArray();
+			
+			PrivateKeyInfo privateKeyInfo = PrivateKeyInfo.getInstance(encodedPrivateKey);
+			
+			JcaPEMKeyConverter jcaPEMKeyConverter = new JcaPEMKeyConverter();
+			PrivateKey privateKey = jcaPEMKeyConverter.getPrivateKey(privateKeyInfo);
+			
+			return (RSAPrivateKey) privateKey;
+		}
 	}
 }
