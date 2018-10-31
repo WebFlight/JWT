@@ -26,14 +26,8 @@ public class RSAKeyPairReader {
 	public RSAPublicKey getPublicKey(IContext context, JWTRSAPublicKey publicKeyObject) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
 		try (	InputStream inputStream = Core.getFileDocumentContent(context, publicKeyObject.getMendixObject());
 				ByteArrayOutputStream buffer = new ByteArrayOutputStream();) {
-			int nRead;
-		    byte[] data = new byte[4096];
-		    while ((nRead = inputStream.read(data, 0, data.length)) != -1) {
-		        buffer.write(data, 0, nRead);
-		    }
-			 
-		    buffer.flush();
-		    byte[] encodedPublicKey = buffer.toByteArray();
+			
+		    byte[] encodedPublicKey = inputStreamToByteArray(inputStream, buffer);
 			
 			KeyFactory keyFactory = KeyFactory.getInstance("RSA");
 			X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(encodedPublicKey);
@@ -46,14 +40,8 @@ public class RSAKeyPairReader {
 	public RSAPrivateKey getPrivateKey(IContext context, JWTRSAPrivateKey privateKeyObject) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
 		try (	InputStream inputStream = Core.getFileDocumentContent(context, privateKeyObject.getMendixObject());
 				ByteArrayOutputStream buffer = new ByteArrayOutputStream();) {
-			int nRead;
-		    byte[] data = new byte[4096];
-		    while ((nRead = inputStream.read(data, 0, data.length)) != -1) {
-		        buffer.write(data, 0, nRead);
-		    }
-			 
-		    buffer.flush();
-		    byte[] encodedPrivateKey = buffer.toByteArray();
+			
+		    byte[] encodedPrivateKey = inputStreamToByteArray(inputStream, buffer);
 			
 			PrivateKeyInfo privateKeyInfo = PrivateKeyInfo.getInstance(encodedPrivateKey);
 			
@@ -62,5 +50,16 @@ public class RSAKeyPairReader {
 			
 			return (RSAPrivateKey) privateKey;
 		}
+	}
+	
+	private byte[] inputStreamToByteArray(InputStream inputStream, ByteArrayOutputStream buffer) throws IOException {
+		int nRead;
+	    byte[] data = new byte[4096];
+	    while ((nRead = inputStream.read(data, 0, data.length)) != -1) {
+	        buffer.write(data, 0, nRead);
+	    }
+		 
+	    buffer.flush();
+	    return buffer.toByteArray();
 	}
 }
