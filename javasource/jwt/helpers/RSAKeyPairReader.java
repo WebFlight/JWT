@@ -52,7 +52,7 @@ public class RSAKeyPairReader {
 		}
 	}
 	
-	private byte[] inputStreamToByteArray(InputStream inputStream, ByteArrayOutputStream buffer) throws IOException {
+	public byte[] inputStreamToByteArray(InputStream inputStream, ByteArrayOutputStream buffer) throws IOException {
 		int nRead;
 	    byte[] data = new byte[4096];
 	    while ((nRead = inputStream.read(data, 0, data.length)) != -1) {
