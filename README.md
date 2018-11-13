@@ -71,6 +71,7 @@ The JWT module implements the auth0/java-jwt/3.3.0 library, which has the follow
 * commons-codec/commons-codec/1.11
 * org.bouncycastle/bcpkix-jdk15on/1.60
 * org.bouncycastle/bcprov-jdk15on/1.60
+
 Dependency conflicts have been reported in combination with org.apache.servicemix.bundles.commons-codec-1.3.0.
 
 # Development notes
