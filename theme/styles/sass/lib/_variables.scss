@@ -122,7 +122,7 @@ $font-weight-header:                    $font-weight-normal !default;
 $line-height-base:                      1.428571429 !default;
 
 // Spacing
-$font-header-margin:					15px 0 20px 0 !default;
+$font-header-margin:					15px 0 30px 0 !default;
 
 // Text Colors
 $font-color-header:				        #17347B !default;
@@ -136,8 +136,8 @@ $font-color-detail:                     $gray-light !default;
 //## Used in components/navigation
 
 // Default Navigation styling
-$navigation-item-height:                60px;
-$navigation-item-padding:               5px 15px;
+$navigation-item-height:                60px !default;
+$navigation-item-padding:               5px 15px !default;
 
 $navigation-font-size:                  $font-size-default !default;
 $navigation-sub-font-size:              $font-size-small !default;
@@ -188,7 +188,7 @@ $navtopbar-glyph-size:                  1.2em !default; // For glyphicons that y
 $navtopbar-bg:                          $topbar-bg !default;
 $navtopbar-bg-hover:                    darken($navtopbar-bg, 4) !default;
 $navtopbar-bg-active:                   darken($navtopbar-bg, 8) !default;
-$navtopbar-color:                       $font-base-color !default;
+$navtopbar-color:                       $font-color-default !default;
 $navtopbar-color-hover:                 $navtopbar-color !default;
 $navtopbar-color-active:                $navtopbar-color !default;
 
@@ -351,7 +351,7 @@ $color-danger-dark:                     mix($brand-danger, black, 70%) !default;
 $color-danger-light:                    mix($brand-danger, white, 60%) !default;
 $color-danger-lighter:                  mix($brand-danger, white, 20%) !default;
 
-$brand-gradient:                        linear-gradient(152deg, #0CC7F0 0%, #087ECC 51%, #077AC9 55%, #0659B9 78%);
+$brand-gradient:                        linear-gradient(152deg, #0CC7F0 0%, #087ECC 51%, #077AC9 55%, #0659B9 78%) !default;
 
 
 //== Grids

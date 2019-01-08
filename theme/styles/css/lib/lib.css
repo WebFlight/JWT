@@ -259,6 +259,14 @@ select.form-control {
   }
 }
 
+@media only screen and (max-device-width: 1024px) and (-webkit-min-device-pixel-ratio: 0) {
+  input[type=date],
+  input[type=time],
+  input[type=datetime-local],
+  input[type=month] {
+    line-height: 1;
+  }
+}
 /* ==========================================================================
    Alerts
 
@@ -458,7 +466,7 @@ select.form-control {
 }
 
 .background-brand-gradient {
-  background-image: linear-gradient(152deg, #0CC7F0 0%, #087ECC 51%, #077AC9 55%, #0659B9 78%);
+  background-image: linear-gradient(152deg, #0CC7F0 0%, #087ECC 51%, #077AC9 55%, #0659B9 78%) !important;
 }
 
 /* ==========================================================================
@@ -1090,7 +1098,7 @@ select.form-control {
   padding: 7.5px 7.5px 7.5px 7.5px;
 }
 .datagrid-sm.mx-datagrid .mx-datagrid-body-table .mx-datagrid-body tr td {
-  padding: 7.5px 7.5px 7.5px grid-padding-left/2;
+  padding: 7.5px 7.5px 7.5px 7.5px;
 }
 
 .datagrid-fullsearch.mx-grid .mx-grid-reset-button {
@@ -4192,7 +4200,7 @@ label {
 }
 
 .mx-title {
-  margin: 15px 0 20px 0;
+  margin: 15px 0 30px 0;
   color: #17347B;
   font-size: 31px;
   font-weight: normal;
@@ -4246,7 +4254,7 @@ h6,
 .h4,
 .h5,
 .h6 {
-  margin: 15px 0 20px 0;
+  margin: 15px 0 30px 0;
   color: #17347B;
   font-weight: normal;
   line-height: 1.3;
@@ -4777,6 +4785,20 @@ h6,
 }
 .cardstatus .cardstatus-status {
   margin-bottom: 5px;
+}
+
+.cardprogress .cardprogress-state {
+  width: 80px;
+  height: 80px;
+  padding: 0;
+  cursor: default;
+  pointer-events: none;
+  border-radius: 100%;
+  font-size: 28px;
+}
+
+.cardhighlight {
+  border-top: 4px solid #0595DB;
 }
 
 /* ==========================================================================
@@ -5334,7 +5356,7 @@ h6,
     bottom: 0;
     left: 60px;
     display: block;
-    overflow-y: scroll;
+    overflow-y: auto;
     min-width: 200px;
     padding-top: 10px;
   }
@@ -5380,6 +5402,13 @@ h6,
   .layout-atlas-responsive-topbar .region-topbar .toggle-btn {
     display: inline-block;
   }
+}
+
+.profile-tablet .mx-scrollcontainer:not(.mx-scrollcontainer-open) > .region-sidebar {
+  overflow-y: auto;
+}
+.profile-tablet .mx-scrollcontainer:not(.mx-scrollcontainer-open) > .region-sidebar .mx-scrollcontainer-wrapper {
+  overflow: visible;
 }
 
 /* ==========================================================================
@@ -5432,25 +5461,43 @@ path.widget-progress-circle-path {
 .widget-progress-circle-primary path.widget-progress-circle-path {
   stroke: #0595DB;
 }
+.widget-progress-circle-primary .progressbar-text {
+  color: #0595DB !important;
+}
 
 .widget-progress-circle-info path.widget-progress-circle-path {
   stroke: #48B0F7;
+}
+.widget-progress-circle-info .progressbar-text {
+  color: #48B0F7 !important;
 }
 
 .widget-progress-circle-success path.widget-progress-circle-path {
   stroke: #76CA02;
 }
+.widget-progress-circle-success .progressbar-text {
+  color: #76CA02 !important;
+}
 
 .widget-progress-circle-warning path.widget-progress-circle-path {
   stroke: #F99B1D;
+}
+.widget-progress-circle-warning .progressbar-text {
+  color: #F99B1D !important;
 }
 
 .widget-progress-circle-danger path.widget-progress-circle-path {
   stroke: #ED1C24;
 }
+.widget-progress-circle-danger .progressbar-text {
+  color: #ED1C24 !important;
+}
 
 .widget-progress-circle-inverse path.widget-progress-circle-path {
   stroke: #252C36;
+}
+.widget-progress-circle-inverse .progressbar-text {
+  color: #252C36 !important;
 }
 
 div.widget-range-slider .rc-slider-handle,
