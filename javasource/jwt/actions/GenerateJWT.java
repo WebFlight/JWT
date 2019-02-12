@@ -10,6 +10,7 @@
 package jwt.actions;
 
 import java.security.interfaces.RSAPrivateKey;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import com.auth0.jwt.JWT;
@@ -24,6 +25,8 @@ import jwt.helpers.AlgorithmParser;
 import jwt.helpers.AudienceListToStringArrayConverter;
 import jwt.helpers.RSAKeyPairReader;
 import jwt.helpers.RegisteredClaimIdentifier;
+import jwt.proxies.ArrayClaim;
+import jwt.proxies.ClaimList;
 import jwt.proxies.PublicClaim;
 import jwt.proxies.PublicClaimBoolean;
 import jwt.proxies.PublicClaimDate;
@@ -103,7 +106,7 @@ public class GenerateJWT extends CustomJavaAction<java.lang.String>
 		logger.debug("Adding audience claim with " + audienceList.length + " audiences.");
 		builder.withAudience(audienceList);
 		
-		List<IMendixObject> claims = Core.retrieveByPath(this.context(), jwtObject.getMendixObject(), "JWT.Claim_JWT");
+		List<IMendixObject> claims = Core.retrieveByPath(this.context(), jwtObject.getMendixObject(), PublicClaim.MemberNames.Claim_JWT.toString());
 		logger.debug("Adding " + claims.size() + " public claims.");
 		
 		Iterator<IMendixObject> claimIterator = claims.iterator();
@@ -126,7 +129,20 @@ public class GenerateJWT extends CustomJavaAction<java.lang.String>
 			
 			logger.debug("Adding claim " + claim.getClaim() + " of entity " + claim.getClass().getSimpleName() + ".");
 			
-			if (claim.getClass() == PublicClaimBoolean.class) {
+			if (claim.getClass() == ArrayClaim.class) {
+				ArrayClaim claimArray = ArrayClaim.initialize(this.context(), claim.getMendixObject());
+				ClaimList claimList = claimArray.getClaimList_ArrayClaim();
+				if (claimList==null) {
+					logger.warn("ArrayClaim " + claim.getClaim() + " doesn't have associated ClaimList.");
+					continue;
+				}
+				List<IMendixObject> arrayPubClaimList = Core.retrieveByPath(this.context(), claimList.getMendixObject(), PublicClaim.MemberNames.PublicClaim_ClaimList.toString());
+				List<String> values = new ArrayList<>();
+				for (IMendixObject arrayPubClaim:arrayPubClaimList) {
+					values.add(arrayPubClaim.getValue(getContext(), PublicClaimString.MemberNames.Value.toString()));
+				}
+				builder.withArrayClaim(claimArray.getClaim(), (String[])values.toArray(new String[] {}));
+			} else if (claim.getClass() == PublicClaimBoolean.class) {
 				PublicClaimBoolean claimBoolean = PublicClaimBoolean.initialize(this.context(), claim.getMendixObject());
 				builder.withClaim(claimBoolean.getClaim(), claimBoolean.getValue());
 			} else if (claim.getClass() == PublicClaimDate.class) {
