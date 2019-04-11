@@ -29,7 +29,7 @@ import jwt.proxies.constants.Constants;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
 
 /**
- * Decodes a JWT string into a JWT object and verifies the signature. Throws an exception when the token could not be decoded or verified.
+ * Decodes a JWT string into a plain text JSON for the header and payload. This enables the user to implement a specific JSON mapping that decodes the header or payload. Throws an exception when the token could not be decoded or verified.
  */
 public class DecodeVerifyJWTPlainText extends CustomJavaAction<IMendixObject>
 {
