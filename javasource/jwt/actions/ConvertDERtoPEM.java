@@ -18,12 +18,11 @@ import com.mendix.core.Core;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.webui.CustomJavaAction;
 import jwt.helpers.RSAKeyPairReader;
-
 import com.mendix.systemwideinterfaces.core.IMendixObject;
 import com.mendix.systemwideinterfaces.core.UserException;
 
 /**
- * Converts a binary public or private key (DER format) to PEM (base64 encoded).
+ * Converts a binary public or private key (DER format) to PEM (base64 encoded). Returns a String containing the PEM encoded certificate (X509 for public key and PKCS1 for private key).
  */
 public class ConvertDERtoPEM extends CustomJavaAction<java.lang.String>
 {
