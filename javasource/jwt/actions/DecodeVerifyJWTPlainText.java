@@ -11,6 +11,7 @@ package jwt.actions;
 
 import java.io.UnsupportedEncodingException;
 import java.security.interfaces.RSAPublicKey;
+import java.util.Base64;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -23,8 +24,6 @@ import com.mendix.systemwideinterfaces.core.DataValidationRuntimeException;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.webui.CustomJavaAction;
 import jwt.helpers.AlgorithmParser;
-import jwt.helpers.AudienceListToStringArrayConverter;
-import jwt.helpers.DecodedJWTParser;
 import jwt.helpers.RSAKeyPairReader;
 import jwt.proxies.constants.Constants;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
@@ -32,31 +31,26 @@ import com.mendix.systemwideinterfaces.core.IMendixObject;
 /**
  * Decodes a JWT string into a JWT object and verifies the signature. Throws an exception when the token could not be decoded or verified.
  */
-public class DecodeVerifyJWT extends CustomJavaAction<IMendixObject>
+public class DecodeVerifyJWTPlainText extends CustomJavaAction<IMendixObject>
 {
 	private java.lang.String token;
 	private java.lang.String secret;
 	private jwt.proxies.ENU_Algorithm algorithm;
-	private IMendixObject __claimsToVerify;
-	private jwt.proxies.JWT claimsToVerify;
 	private IMendixObject __publicKey;
 	private jwt.proxies.JWTRSAPublicKey publicKey;
 
-	public DecodeVerifyJWT(IContext context, java.lang.String token, java.lang.String secret, java.lang.String algorithm, IMendixObject claimsToVerify, IMendixObject publicKey)
+	public DecodeVerifyJWTPlainText(IContext context, java.lang.String token, java.lang.String secret, java.lang.String algorithm, IMendixObject publicKey)
 	{
 		super(context);
 		this.token = token;
 		this.secret = secret;
 		this.algorithm = algorithm == null ? null : jwt.proxies.ENU_Algorithm.valueOf(algorithm);
-		this.__claimsToVerify = claimsToVerify;
 		this.__publicKey = publicKey;
 	}
 
 	@Override
 	public IMendixObject executeAction() throws Exception
 	{
-		this.claimsToVerify = __claimsToVerify == null ? null : jwt.proxies.JWT.initialize(getContext(), __claimsToVerify);
-
 		this.publicKey = __publicKey == null ? null : jwt.proxies.JWTRSAPublicKey.initialize(getContext(), __publicKey);
 
 		// BEGIN USER CODE
@@ -87,30 +81,6 @@ public class DecodeVerifyJWT extends CustomJavaAction<IMendixObject>
 			
 			Verification verification = JWT.require(alg);
 			
-			if (claimsToVerify != null) {
-				if (claimsToVerify.getiss() != null) {
-					logger.debug("Verify issuer with value: " + claimsToVerify.getiss() + ".");
-					verification.withIssuer(claimsToVerify.getiss());
-				}
-			
-				if (claimsToVerify.getjti() != null) {
-					logger.debug("Verify JWT token ID with value: " + claimsToVerify.getjti() + ".");
-					verification.withJWTId(claimsToVerify.getjti());
-				}
-				
-				if (claimsToVerify.getsub() != null) {
-					logger.debug("Verify subject with value: " + claimsToVerify.getsub() + ".");
-					verification.withSubject(claimsToVerify.getsub());
-				}
-				
-				String[] audienceList = new AudienceListToStringArrayConverter().convert(this.context(), claimsToVerify);
-				
-				if (audienceList.length > 0) {
-					logger.debug("Verify with list of " + audienceList.length + " audiences.");
-					verification.withAudience(audienceList);
-				}
-			}
-			
 			JWTVerifier verifier = verification.build();
 			jwt = verifier.verify(token);
 			
@@ -121,12 +91,16 @@ public class DecodeVerifyJWT extends CustomJavaAction<IMendixObject>
 		} catch (JWTVerificationException exception){
 			logger.info("Verification of token signature/claims failed: " + exception.getMessage());
 			throw exception;
-		} 
+		}
 		
-		 
-		 return new DecodedJWTParser()
-				 .parse(this.context(), logger, jwt)
-				 .getMendixObject();
+		String header = new String(Base64.getDecoder().decode(jwt.getHeader()));
+		String payload = new String(Base64.getDecoder().decode(jwt.getPayload()));
+		
+		IMendixObject jwtPlainText = Core.instantiate(this.context(), "JWT.JWTPlainText");
+		jwtPlainText.setValue(this.context(), "Header", header);
+		jwtPlainText.setValue(this.context(), "Payload", payload);
+		
+		return jwtPlainText;
 		// END USER CODE
 	}
 
@@ -136,7 +110,7 @@ public class DecodeVerifyJWT extends CustomJavaAction<IMendixObject>
 	@Override
 	public java.lang.String toString()
 	{
-		return "DecodeVerifyJWT";
+		return "DecodeVerifyJWTPlainText";
 	}
 
 	// BEGIN EXTRA CODE
