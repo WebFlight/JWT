@@ -119,7 +119,7 @@ public class DecodeVerifyJWT extends CustomJavaAction<IMendixObject>
 		    logger.error("Token encoding unsupported.", exception);
 		    throw exception;
 		} catch (JWTVerificationException exception){
-			logger.error("Verification of token signature/claims failed.", exception);
+			logger.info("Verification of token signature/claims failed: " + exception.getMessage());
 			throw exception;
 		} 
 		
