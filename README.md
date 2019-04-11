@@ -1,6 +1,6 @@
 # Mendix JWT module
 
-Welcome to the Mendix JWT (JSON Web Token) module. This module can be used in [Mendix](http://www.mendix.com) apps to generate and decode JWT tokens. The app uses the com.auth0/java-jwt/3.3.0 library. JSON Web Tokens are often used to perform token authentication in web services. Try it at [JWT.io](https://jwt.io)!
+Welcome to the Mendix JWT (JSON Web Token) module. This module can be used in [Mendix](http://www.mendix.com) apps to generate and decode JWT tokens. The app uses the com.auth0/java-jwt/3.8.0 library. JSON Web Tokens are often used to perform token authentication in web services. Try it at [JWT.io](https://jwt.io)!
 
 ![JWT logo][1]
 
@@ -46,6 +46,7 @@ Once the JWT module is imported in your Mendix model, the Java actions can be us
 		- Long
 		- Decimal
 		- String
+	- When using the *Decode & Verify JWT Plain Text*, you will have access to the plain text header and payload JSON. Consequently, you can configure your own mapping to convert the JSON to an instance of a Mendix object. This provides the possibility to decode nested JSON objects and arrays.
 * RSA Key Pair generation
 	- Generate public/private key pairs in Mendix (public key binary X.509 format and private key binary PKCS1 format)
 	- Recommended not to generate new keypairs on runtime to prevent performance issues
@@ -57,17 +58,15 @@ Once the JWT module is imported in your Mendix model, the Java actions can be us
 * Algorithms
 	- ECDSA
 * Encoding public claims containing an array of values
-* Decoding public claims containing an array of values
-* Have access to values in the JWT Header (the JWT header is automatically verified by the underlying library)
 
 ## Logging
 * The JWT Log node is available for more information.
 
 ## Dependencies
-The JWT module implements the auth0/java-jwt/3.3.0 library, which has the following dependencies that are included in the module package:
-* com.fasterxml.jackson.core/jackson-databind/2.9.2
+The JWT module implements the auth0/java-jwt/3.8.0 library, which has the following dependencies that are included in the module package:
+* com.fasterxml.jackson.core/jackson-databind/2.9.8
 	- com.fasterxml.jackson.core/jackson-annotations/2.9.0
-	- com.fasterxml.jackson.core/jackson-core/2.9.2
+	- com.fasterxml.jackson.core/jackson-core/2.9.8
 * commons-codec/commons-codec/1.11
 * org.bouncycastle/bcpkix-jdk15on/1.60
 * org.bouncycastle/bcprov-jdk15on/1.60
