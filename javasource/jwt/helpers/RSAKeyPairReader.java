@@ -3,14 +3,15 @@ package jwt.helpers;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
-import java.security.spec.X509EncodedKeySpec;
 
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
 import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
@@ -23,15 +24,13 @@ import jwt.proxies.JWTRSAPublicKey;
 
 public class RSAKeyPairReader {
 	
-	public RSAPublicKey getPublicKey(IContext context, JWTRSAPublicKey publicKeyObject) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
+	public RSAPublicKey getPublicKey(IContext context, JWTRSAPublicKey publicKeyObject) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, CertificateException {
 		try (	InputStream inputStream = Core.getFileDocumentContent(context, publicKeyObject.getMendixObject());
 				ByteArrayOutputStream buffer = new ByteArrayOutputStream();) {
-			
-		    byte[] encodedPublicKey = inputStreamToByteArray(inputStream, buffer);
-			
-			KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-			X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(encodedPublicKey);
-			PublicKey publicKey = keyFactory.generatePublic(publicKeySpec);
+		    
+			CertificateFactory fact = CertificateFactory.getInstance("X.509");
+			X509Certificate cer = (X509Certificate) fact.generateCertificate(inputStream);
+			PublicKey publicKey = cer.getPublicKey();
 			
 			return (RSAPublicKey) publicKey;
 		}

@@ -9,15 +9,15 @@
 
 package jwt.actions;
 
-import java.io.ByteArrayInputStream;
 import java.math.BigInteger;
 import java.security.KeyFactory;
+import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.RSAPublicKeySpec;
-import java.security.spec.X509EncodedKeySpec;
-import com.mendix.core.Core;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.webui.CustomJavaAction;
+import jwt.helpers.RSAKeyPairGenerator;
+import jwt.helpers.RSAKeyPairReader;
 import jwt.proxies.JWTRSAPublicKey;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
 
@@ -28,26 +28,39 @@ public class GenerateRSAPublicKey extends CustomJavaAction<IMendixObject>
 {
 	private java.lang.String modulus;
 	private java.lang.String publicExponent;
+	private java.lang.String issuer;
+	private java.lang.String subject;
+	private java.lang.Long yearsValidity;
+	private IMendixObject __privateKey;
+	private jwt.proxies.JWTRSAPrivateKey privateKey;
 
-	public GenerateRSAPublicKey(IContext context, java.lang.String modulus, java.lang.String publicExponent)
+	public GenerateRSAPublicKey(IContext context, java.lang.String modulus, java.lang.String publicExponent, java.lang.String issuer, java.lang.String subject, java.lang.Long yearsValidity, IMendixObject privateKey)
 	{
 		super(context);
 		this.modulus = modulus;
 		this.publicExponent = publicExponent;
+		this.issuer = issuer;
+		this.subject = subject;
+		this.yearsValidity = yearsValidity;
+		this.__privateKey = privateKey;
 	}
 
 	@Override
 	public IMendixObject executeAction() throws Exception
 	{
+		this.privateKey = __privateKey == null ? null : jwt.proxies.JWTRSAPrivateKey.initialize(getContext(), __privateKey);
+
 		// BEGIN USER CODE
 		KeyFactory keyFactory = KeyFactory.getInstance("RSA");
 		RSAPublicKeySpec publicKeySpec = new RSAPublicKeySpec(new BigInteger(modulus), new BigInteger(publicExponent));
 		RSAPublicKey rsaPublicKey = (RSAPublicKey) keyFactory.generatePublic(publicKeySpec);
-		X509EncodedKeySpec x509EncodedKeySpec = new X509EncodedKeySpec(rsaPublicKey.getEncoded());
 		
-		JWTRSAPublicKey publicKey = new JWTRSAPublicKey(this.context());
-		Core.commit(this.context(), publicKey.getMendixObject());
-		Core.storeFileDocumentContent(this.context(), publicKey.getMendixObject(), new ByteArrayInputStream(x509EncodedKeySpec.getEncoded()));
+		RSAKeyPairReader rsaKeyPairReader = new RSAKeyPairReader();
+		RSAPrivateKey rsaPrivateKey = rsaKeyPairReader.getPrivateKey(this.getContext(), privateKey);
+		
+		RSAKeyPairGenerator rsaKeyPairGenerator = new RSAKeyPairGenerator();
+		JWTRSAPublicKey publicKey = rsaKeyPairGenerator.generatePublic(this.getContext(), "public.der", rsaPublicKey, rsaPrivateKey, issuer, subject, Math.toIntExact(yearsValidity));
+		
 		return publicKey.getMendixObject();
 		// END USER CODE
 	}

@@ -19,9 +19,16 @@ import com.mendix.systemwideinterfaces.core.IMendixObject;
  */
 public class GenerateRSAKeyPair extends CustomJavaAction<IMendixObject>
 {
-	public GenerateRSAKeyPair(IContext context)
+	private java.lang.String issuer;
+	private java.lang.String subject;
+	private java.lang.Long yearsValidity;
+
+	public GenerateRSAKeyPair(IContext context, java.lang.String issuer, java.lang.String subject, java.lang.Long yearsValidity)
 	{
 		super(context);
+		this.issuer = issuer;
+		this.subject = subject;
+		this.yearsValidity = yearsValidity;
 	}
 
 	@Override
@@ -29,7 +36,7 @@ public class GenerateRSAKeyPair extends CustomJavaAction<IMendixObject>
 	{
 		// BEGIN USER CODE
 		RSAKeyPairGenerator rsaKeyPairGenerator = new RSAKeyPairGenerator();
-		return rsaKeyPairGenerator.generate(this.context(), 2048).getMendixObject();
+		return rsaKeyPairGenerator.generate(this.context(), 2048, issuer, subject, Math.toIntExact(yearsValidity)).getMendixObject();
 		// END USER CODE
 	}
 

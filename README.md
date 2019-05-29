@@ -24,6 +24,11 @@ Welcome to the Mendix JWT (JSON Web Token) module. This module can be used in [M
 
 # Application
 Once the JWT module is imported in your Mendix model, the Java actions can be used in microflows.
+When using RSA algorithms, use the following OpenSSL commands to verify your self-generated or existing public and private keys:
+```
+openssl rsa -in private.der -inform DER
+openssl x509 -in public.der -inform DER
+```
 
 ## Supported
 * Algorithms
