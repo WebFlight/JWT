@@ -41,8 +41,9 @@ public class DecodeVerifyJWT extends CustomJavaAction<IMendixObject>
 	private jwt.proxies.JWT claimsToVerify;
 	private IMendixObject __publicKey;
 	private jwt.proxies.JWTRSAPublicKey publicKey;
+	private java.lang.Long leeway;
 
-	public DecodeVerifyJWT(IContext context, java.lang.String token, java.lang.String secret, java.lang.String algorithm, IMendixObject claimsToVerify, IMendixObject publicKey)
+	public DecodeVerifyJWT(IContext context, java.lang.String token, java.lang.String secret, java.lang.String algorithm, IMendixObject claimsToVerify, IMendixObject publicKey, java.lang.Long leeway)
 	{
 		super(context);
 		this.token = token;
@@ -50,6 +51,7 @@ public class DecodeVerifyJWT extends CustomJavaAction<IMendixObject>
 		this.algorithm = algorithm == null ? null : jwt.proxies.ENU_Algorithm.valueOf(algorithm);
 		this.__claimsToVerify = claimsToVerify;
 		this.__publicKey = publicKey;
+		this.leeway = leeway;
 	}
 
 	@java.lang.Override
@@ -61,6 +63,10 @@ public class DecodeVerifyJWT extends CustomJavaAction<IMendixObject>
 
 		// BEGIN USER CODE
 		ILogNode logger = Core.getLogger(Constants.getLOGNODE());
+		
+		if(leeway == null || leeway < 0) {
+			leeway = 0L;
+		}
 		
 		if (this.token == null || this.token.equals("")) {
 			logger.error("Cannot decode an empty token.");
@@ -85,7 +91,7 @@ public class DecodeVerifyJWT extends CustomJavaAction<IMendixObject>
 			Algorithm alg = new AlgorithmParser().parseAlgorithm(algorithm, secret, rsaPublicKey, null);
 			logger.debug("Starting to decode JWT token with algorithm " + alg.getName() + ".");
 			
-			Verification verification = JWT.require(alg);
+			Verification verification = JWT.require(alg).acceptLeeway(leeway);
 			
 			if (claimsToVerify != null) {
 				if (claimsToVerify.getiss() != null) {
