@@ -38,14 +38,16 @@ public class DecodeVerifyJWTPlainText extends CustomJavaAction<IMendixObject>
 	private jwt.proxies.ENU_Algorithm algorithm;
 	private IMendixObject __publicKey;
 	private jwt.proxies.JWTRSAPublicKey publicKey;
+	private java.lang.Long leeway;
 
-	public DecodeVerifyJWTPlainText(IContext context, java.lang.String token, java.lang.String secret, java.lang.String algorithm, IMendixObject publicKey)
+	public DecodeVerifyJWTPlainText(IContext context, java.lang.String token, java.lang.String secret, java.lang.String algorithm, IMendixObject publicKey, java.lang.Long leeway)
 	{
 		super(context);
 		this.token = token;
 		this.secret = secret;
 		this.algorithm = algorithm == null ? null : jwt.proxies.ENU_Algorithm.valueOf(algorithm);
 		this.__publicKey = publicKey;
+		this.leeway = leeway;
 	}
 
 	@java.lang.Override
@@ -79,7 +81,7 @@ public class DecodeVerifyJWTPlainText extends CustomJavaAction<IMendixObject>
 			Algorithm alg = new AlgorithmParser().parseAlgorithm(algorithm, secret, rsaPublicKey, null);
 			logger.debug("Starting to decode JWT token with algorithm " + alg.getName() + ".");
 			
-			Verification verification = JWT.require(alg);
+			Verification verification = JWT.require(alg).acceptLeeway(leeway);
 			
 			JWTVerifier verifier = verification.build();
 			jwt = verifier.verify(token);

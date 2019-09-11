@@ -42,7 +42,7 @@ openssl x509 -in public.der -inform DER
 	- Encoding all registered claims (including array of audiences)
 	- Decoding all registered claims (including array of audiences)
 	- Verify registered claims jti (JWT ID), sub (subject), aud (audience) and iss (issuer). The *Decode JWT* throws an exception when the token is not valid or could not be verified. Be sure to catch the exceptions in the microflow if additional logic has be executed.
-	- Check for expiry dates when decoding (exp claim), which is automatically done by the underlying JWT library
+	- Check for expiry dates when decoding (exp claim), which is automatically done by the underlying JWT library. Specify leeway parameter in seconds to allow for more flexibiliy in time-based validations.
 * Public claims
 	- Encode and decode public claims with different types. When decoding public claims, all possible types are parsed in an object of the PublicClaimResponse entity. Type casts that are not possible by default (e.g. String to Decimal), will be left empty.
 		- Boolean
