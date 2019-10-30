@@ -13,9 +13,15 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
+import org.bouncycastle.asn1.pkcs.RSAPrivateKey;
+import org.bouncycastle.crypto.params.RSAPrivateCrtKeyParameters;
+import org.bouncycastle.crypto.util.PrivateKeyFactory;
+import org.bouncycastle.crypto.util.PrivateKeyInfoFactory;
+import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
 import org.bouncycastle.util.io.pem.PemObject;
 import org.bouncycastle.util.io.pem.PemReader;
 import com.mendix.core.Core;
+import com.mendix.logging.ILogNode;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.webui.CustomJavaAction;
 import jwt.proxies.JWTRSAPrivateKey;
@@ -60,17 +66,53 @@ public class ConvertPEMtoDER extends CustomJavaAction<IMendixObject>
 		PemReader pemReader = new PemReader(reader);
 		PemObject pemObject = pemReader.readPemObject();
 		
-		byte[] pemBytes = pemObject.getContent();
-		InputStream inputStream = new ByteArrayInputStream(pemBytes);
+		InputStream inputStream = null;
 		
-		FileDocument derKey = null;;
+		FileDocument derKey = null;
 		
 		try {
 			switch(keyType) {
 			case _Private:
 				derKey = new JWTRSAPrivateKey(context);
+				RSAPrivateCrtKeyParameters privateKeyParameter;
+				if (pemObject.getType().endsWith("RSA PRIVATE KEY")) {
+				    //PKCS#1 key
+				    RSAPrivateKey rsa   = RSAPrivateKey.getInstance(pemObject.getContent());
+				    privateKeyParameter = new RSAPrivateCrtKeyParameters(
+				        rsa.getModulus(),
+				        rsa.getPublicExponent(),
+				        rsa.getPrivateExponent(),
+				        rsa.getPrime1(),
+				        rsa.getPrime2(),
+				        rsa.getExponent1(),
+				        rsa.getExponent2(),
+				        rsa.getCoefficient()
+				    );
+				} else if (pemObject.getType().endsWith("PRIVATE KEY")) {
+				    //PKCS#8 key
+					ILogNode logger = Core.getLogger("JWT");
+					logger.warn("PKCS#8 private key format detected. JWT standard RSASSA-PKCS1-v1_5 uses PKCS#1.");
+				    privateKeyParameter = (RSAPrivateCrtKeyParameters) PrivateKeyFactory.createKey(
+				        pemObject.getContent()
+				    );
+				} else {
+				    throw new RuntimeException("Unsupported key type: " + pemObject.getType());
+				}
+				
+				byte[] privateKeyBytes = new JcaPEMKeyConverter()
+			    .getPrivateKey(
+			        PrivateKeyInfoFactory.createPrivateKeyInfo(
+			            privateKeyParameter
+			        )
+			    ).getEncoded();
+				
+				inputStream = new ByteArrayInputStream(privateKeyBytes);
+				
 				break;
 			case _Public:
+				byte[] pemBytes = pemObject.getContent();
+				inputStream = new ByteArrayInputStream(pemBytes);
+				
 				derKey = new JWTRSAPublicKey(context);
 				break;
 				default:

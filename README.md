@@ -53,11 +53,11 @@ openssl x509 -in public.der -inform DER
 		- String
 	- When using the *Decode & Verify JWT Plain Text*, you will have access to the plain text header and payload JSON. Consequently, you can configure your own mapping to convert the JSON to an instance of a Mendix object. This provides the possibility to decode nested JSON objects and arrays.
 * RSA Key Pair generation
-	- Generate public/private key pairs in Mendix (public key binary X.509 format and private key binary PKCS1 format)
+	- Generate public/private key pairs in Mendix (X.509 certificate and private key binary PKCS1 format)
 	- Recommended not to generate new keypairs on runtime to prevent performance issues
 	- Instantiate public/private keys based on known key specifications (modulus, public and private key exponent)
 	- Key pairs will be persisted in the database (necessary for binary storage). Pay attention to security
-	- Convert PEM certificate format (BASE64 String) to DER format (binary)
+	- Convert PEM certificate format (BASE64 String) to DER format (binary). Private key PKCS1 and PKCS8 supported.
 
 ## Not supported
 * Algorithms
