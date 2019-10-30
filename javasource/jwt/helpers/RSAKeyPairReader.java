@@ -1,8 +1,10 @@
 package jwt.helpers;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -12,6 +14,7 @@ import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
+import java.security.spec.X509EncodedKeySpec;
 
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
 import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
@@ -24,13 +27,22 @@ import jwt.proxies.JWTRSAPublicKey;
 
 public class RSAKeyPairReader {
 	
-	public RSAPublicKey getPublicKey(IContext context, JWTRSAPublicKey publicKeyObject) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, CertificateException {
+	public RSAPublicKey getPublicKey(IContext context, JWTRSAPublicKey publicKeyObject) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
 		try (	InputStream inputStream = Core.getFileDocumentContent(context, publicKeyObject.getMendixObject());
 				ByteArrayOutputStream buffer = new ByteArrayOutputStream();) {
 		    
-			CertificateFactory fact = CertificateFactory.getInstance("X.509");
-			X509Certificate cer = (X509Certificate) fact.generateCertificate(inputStream);
-			PublicKey publicKey = cer.getPublicKey();
+			PublicKey publicKey = null;
+			byte[] encodedPublicKey = inputStreamToByteArray(inputStream, buffer);
+			
+			try {
+				CertificateFactory fact = CertificateFactory.getInstance("X.509");
+				X509Certificate cer = (X509Certificate) fact.generateCertificate(new ByteArrayInputStream(encodedPublicKey));
+				publicKey = cer.getPublicKey();
+			} catch (CertificateException e) {
+				KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+				X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(encodedPublicKey);
+				publicKey = keyFactory.generatePublic(publicKeySpec);
+			}
 			
 			return (RSAPublicKey) publicKey;
 		}

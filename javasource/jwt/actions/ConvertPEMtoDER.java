@@ -21,6 +21,7 @@ import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
 import org.bouncycastle.util.io.pem.PemObject;
 import org.bouncycastle.util.io.pem.PemReader;
 import com.mendix.core.Core;
+import com.mendix.logging.ILogNode;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.webui.CustomJavaAction;
 import jwt.proxies.JWTRSAPrivateKey;
@@ -89,6 +90,8 @@ public class ConvertPEMtoDER extends CustomJavaAction<IMendixObject>
 				    );
 				} else if (pemObject.getType().endsWith("PRIVATE KEY")) {
 				    //PKCS#8 key
+					ILogNode logger = Core.getLogger("JWT");
+					logger.warn("PKCS#8 private key format detected. JWT standard RSASSA-PKCS1-v1_5 uses PKCS#1.");
 				    privateKeyParameter = (RSAPrivateCrtKeyParameters) PrivateKeyFactory.createKey(
 				        pemObject.getContent()
 				    );
