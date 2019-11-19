@@ -68,13 +68,13 @@ openssl x509 -in public.der -inform DER
 * The JWT Log node is available for more information.
 
 ## Dependencies
-The JWT module implements the auth0/java-jwt/3.8.0 library, which has the following dependencies that are included in the module package:
-* com.fasterxml.jackson.core/jackson-databind/2.9.8
-	- com.fasterxml.jackson.core/jackson-annotations/2.9.0
-	- com.fasterxml.jackson.core/jackson-core/2.9.8
-* commons-codec/commons-codec/1.11
-* org.bouncycastle/bcpkix-jdk15on/1.60
-* org.bouncycastle/bcprov-jdk15on/1.60
+The JWT module implements the auth0/java-jwt library, which has the following dependencies that are included in the module package:
+* com.fasterxml.jackson.core/jackson-databind
+	- com.fasterxml.jackson.core/jackson-annotations
+	- com.fasterxml.jackson.core/jackson-core
+* commons-codec/commons-codec
+* org.bouncycastle/bcpkix-jdk15on
+* org.bouncycastle/bcprov-jdk15on
 
 Dependency conflicts have been reported in combination with org.apache.servicemix.bundles.commons-codec-1.3.0.
 
