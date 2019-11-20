@@ -22,16 +22,19 @@ public class DecodeVerifyJWTPlainText extends CustomJavaAction<IMendixObject>
 	private java.lang.String token;
 	private java.lang.String secret;
 	private jwt.proxies.ENU_Algorithm algorithm;
+	private IMendixObject __claimsToVerify;
+	private jwt.proxies.JWT claimsToVerify;
 	private IMendixObject __publicKey;
 	private jwt.proxies.JWTRSAPublicKey publicKey;
 	private java.lang.Long leeway;
 
-	public DecodeVerifyJWTPlainText(IContext context, java.lang.String token, java.lang.String secret, java.lang.String algorithm, IMendixObject publicKey, java.lang.Long leeway)
+	public DecodeVerifyJWTPlainText(IContext context, java.lang.String token, java.lang.String secret, java.lang.String algorithm, IMendixObject claimsToVerify, IMendixObject publicKey, java.lang.Long leeway)
 	{
 		super(context);
 		this.token = token;
 		this.secret = secret;
 		this.algorithm = algorithm == null ? null : jwt.proxies.ENU_Algorithm.valueOf(algorithm);
+		this.__claimsToVerify = claimsToVerify;
 		this.__publicKey = publicKey;
 		this.leeway = leeway;
 	}
@@ -39,11 +42,13 @@ public class DecodeVerifyJWTPlainText extends CustomJavaAction<IMendixObject>
 	@java.lang.Override
 	public IMendixObject executeAction() throws Exception
 	{
+		this.claimsToVerify = __claimsToVerify == null ? null : jwt.proxies.JWT.initialize(getContext(), __claimsToVerify);
+
 		this.publicKey = __publicKey == null ? null : jwt.proxies.JWTRSAPublicKey.initialize(getContext(), __publicKey);
 
 		// BEGIN USER CODE
 		JWTDecoder jwtDecoder = new JWTDecoder(this.context(), token);
-		IMendixObject jwtPlainText = jwtDecoder.verifyAndDecodePlainText(secret, algorithm, null, publicKey, leeway);
+		IMendixObject jwtPlainText = jwtDecoder.verifyAndDecodePlainText(secret, algorithm, claimsToVerify, publicKey, leeway);
 		return jwtPlainText;
 		// END USER CODE
 	}

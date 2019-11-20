@@ -40,21 +40,28 @@ public class JWTDecoder {
 	
 	public IMendixObject decodeToObject() {
 		validateToken();
-		return getDecodedJWTObject();
+		DecodedJWT decodedJWT = decode();
+		return getDecodedJWTObject(decodedJWT);
 	}
 	
 	public IMendixObject verifyAndDecodeToObject(String secret, ENU_Algorithm algorithm, jwt.proxies.JWT claimsToVerify, jwt.proxies.JWTRSAPublicKey publicKey, Long leeway) {
 		validateToken();
 		validateAlgorithm(algorithm);
-		verify(secret, algorithm, claimsToVerify, publicKey, leeway);
-		return getDecodedJWTObject();
+		DecodedJWT decodedJWT = verify(secret, algorithm, claimsToVerify, publicKey, leeway);
+		return getDecodedJWTObject(decodedJWT);
+	}
+	
+	public IMendixObject decodePlainText() {
+		validateToken();
+		DecodedJWT decodedJWT = decode();
+		return getDecodedJWTPlainText(decodedJWT);
 	}
 	
 	public IMendixObject verifyAndDecodePlainText(String secret, ENU_Algorithm algorithm, jwt.proxies.JWT claimsToVerify, jwt.proxies.JWTRSAPublicKey publicKey, Long leeway) {
 		validateToken();
 		validateAlgorithm(algorithm);
-		verify(secret, algorithm, claimsToVerify, publicKey, leeway);
-		return getDecodedJWTPlainText();
+		DecodedJWT decodedJWT = verify(secret, algorithm, claimsToVerify, publicKey, leeway);
+		return getDecodedJWTPlainText(decodedJWT);
 	}
 	
 	private void validateToken() {
@@ -71,7 +78,7 @@ public class JWTDecoder {
 		}
 	}
 	
-	private void verify(String secret, ENU_Algorithm algorithm, jwt.proxies.JWT claimsToVerify, jwt.proxies.JWTRSAPublicKey publicKey, Long unvalidatedLeeway) {
+	private DecodedJWT verify(String secret, ENU_Algorithm algorithm, jwt.proxies.JWT claimsToVerify, jwt.proxies.JWTRSAPublicKey publicKey, Long unvalidatedLeeway) {
 		Long leeway = validateLeeway(unvalidatedLeeway);
 		
 		RSAPublicKey rsaPublicKey = null;
@@ -120,9 +127,12 @@ public class JWTDecoder {
 			}
 			
 			JWTVerifier verifier = verification.build();
-			verifier.verify(token);
+			DecodedJWT decodedJWT = verifier.verify(token);
 			
 			logger.debug("Verifying token successfull.");
+			
+			return decodedJWT;
+			
 		} catch (UnsupportedEncodingException exception){
 		    logger.error("Token encoding unsupported.", exception);
 		    throw new RuntimeException(exception);
@@ -141,8 +151,11 @@ public class JWTDecoder {
 		return leeway;
 	}
 	
-	private IMendixObject getDecodedJWTObject() {
-		DecodedJWT jwt = JWT.decode(token);
+	private DecodedJWT decode() {
+		return JWT.decode(this.token);
+	}
+	
+	private IMendixObject getDecodedJWTObject(DecodedJWT jwt) {
 		IMendixObject jwtObject =  new DecodedJWTParser()
 		.parse(this.context, logger, jwt)
 		.getMendixObject();
@@ -150,9 +163,7 @@ public class JWTDecoder {
 		return jwtObject;
 	}
 	
-	private IMendixObject getDecodedJWTPlainText() {
-		DecodedJWT jwt = JWT.decode(token);
-		
+	private IMendixObject getDecodedJWTPlainText(DecodedJWT jwt) {
 		String header = new String(Base64.getDecoder().decode(jwt.getHeader()));
 		String payload = new String(Base64.getDecoder().decode(jwt.getPayload()));
 		
