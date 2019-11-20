@@ -32,7 +32,8 @@ public class DecodeJWT extends CustomJavaAction<IMendixObject>
 	{
 		// BEGIN USER CODE
 		JWTDecoder jwtDecoder = new JWTDecoder(this.context(), token);
-		return jwtDecoder.decodeToObject();
+		IMendixObject decodedJWT = jwtDecoder.decodeToObject(); 
+		return decodedJWT;
 		// END USER CODE
 	}
 
