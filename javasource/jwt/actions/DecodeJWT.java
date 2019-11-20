@@ -19,7 +19,9 @@ import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.mendix.core.Core;
 import com.mendix.logging.ILogNode;
 import jwt.proxies.constants.Constants;
+import jwt.usecases.JWTDecoder;
 import jwt.helpers.DecodedJWTParser;
+import jwt.helpers.OutputType;
 
 /**
  * Decodes a JWT string into a JWT object. Throws an exception when the token could not be decoded.
@@ -38,21 +40,9 @@ public class DecodeJWT extends CustomJavaAction<IMendixObject>
 	public IMendixObject executeAction() throws Exception
 	{
 		// BEGIN USER CODE
-		ILogNode logger = Core.getLogger(Constants.getLOGNODE());
-		
-		if (this.token == null || this.token.equals("")) {
-			logger.error("Cannot decode an empty token.");
-			throw new DataValidationRuntimeException("Cannot decode an empty token.");
-		}
-		
-		try {
-			DecodedJWT jwt = JWT.decode(token);
-			return new DecodedJWTParser()
-			.parse(this.context(), logger, jwt)
-			.getMendixObject();
-		} catch (JWTDecodeException exception){
-			throw exception;
-		}
+		JWTDecoder jwtDecoder = new JWTDecoder(this.context(), token);
+		IMendixObject jwt = jwtDecoder.decode(false, OutputType.JWT_OBJECT);
+		return jwt;
 		// END USER CODE
 	}
 
