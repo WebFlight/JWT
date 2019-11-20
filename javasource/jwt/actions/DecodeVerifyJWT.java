@@ -9,24 +9,9 @@
 
 package jwt.actions;
 
-import java.io.UnsupportedEncodingException;
-import java.security.interfaces.RSAPublicKey;
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.auth0.jwt.interfaces.DecodedJWT;
-import com.auth0.jwt.interfaces.Verification;
-import com.mendix.core.Core;
-import com.mendix.logging.ILogNode;
-import com.mendix.systemwideinterfaces.core.DataValidationRuntimeException;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.webui.CustomJavaAction;
-import jwt.helpers.AlgorithmParser;
-import jwt.helpers.AudienceListToStringArrayConverter;
-import jwt.helpers.DecodedJWTParser;
-import jwt.helpers.RSAKeyPairReader;
-import jwt.proxies.constants.Constants;
+import jwt.usecases.JWTDecoder;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
 
 /**
@@ -62,77 +47,9 @@ public class DecodeVerifyJWT extends CustomJavaAction<IMendixObject>
 		this.publicKey = __publicKey == null ? null : jwt.proxies.JWTRSAPublicKey.initialize(getContext(), __publicKey);
 
 		// BEGIN USER CODE
-		ILogNode logger = Core.getLogger(Constants.getLOGNODE());
-		
-		if(leeway == null || leeway < 0) {
-			leeway = 0L;
-		}
-		
-		if (this.token == null || this.token.equals("")) {
-			logger.error("Cannot decode an empty token.");
-			throw new DataValidationRuntimeException("Cannot decode an empty token.");
-		}
-		
-		if (this.algorithm == null) {
-			logger.error("Cannot decode token using an empty algorithm.");
-			throw new DataValidationRuntimeException("Cannot decode token using an empty algorithm.");
-		}
-		
-		RSAPublicKey rsaPublicKey = null;
-		
-		if(publicKey != null) {
-			RSAKeyPairReader rsaKeyPairReader = new RSAKeyPairReader();
-			rsaPublicKey = rsaKeyPairReader.getPublicKey(this.context(), publicKey);
-		}
-		
-		DecodedJWT jwt = null;
-		
-		try {
-			Algorithm alg = new AlgorithmParser().parseAlgorithm(algorithm, secret, rsaPublicKey, null);
-			logger.debug("Starting to decode JWT token with algorithm " + alg.getName() + ".");
-			
-			Verification verification = JWT.require(alg).acceptLeeway(leeway);
-			
-			if (claimsToVerify != null) {
-				if (claimsToVerify.getiss() != null) {
-					logger.debug("Verify issuer with value: " + claimsToVerify.getiss() + ".");
-					verification.withIssuer(claimsToVerify.getiss());
-				}
-			
-				if (claimsToVerify.getjti() != null) {
-					logger.debug("Verify JWT token ID with value: " + claimsToVerify.getjti() + ".");
-					verification.withJWTId(claimsToVerify.getjti());
-				}
-				
-				if (claimsToVerify.getsub() != null) {
-					logger.debug("Verify subject with value: " + claimsToVerify.getsub() + ".");
-					verification.withSubject(claimsToVerify.getsub());
-				}
-				
-				String[] audienceList = new AudienceListToStringArrayConverter().convert(this.context(), claimsToVerify);
-				
-				if (audienceList.length > 0) {
-					logger.debug("Verify with list of " + audienceList.length + " audiences.");
-					verification.withAudience(audienceList);
-				}
-			}
-			
-			JWTVerifier verifier = verification.build();
-			jwt = verifier.verify(token);
-			
-			logger.debug("Verifying token successfull.");
-		} catch (UnsupportedEncodingException exception){
-		    logger.error("Token encoding unsupported.", exception);
-		    throw exception;
-		} catch (JWTVerificationException exception){
-			logger.info("Verification of token signature/claims failed: " + exception.getMessage());
-			throw exception;
-		} 
-		
-		 
-		 return new DecodedJWTParser()
-				 .parse(this.context(), logger, jwt)
-				 .getMendixObject();
+		JWTDecoder jwtDecoder = new JWTDecoder(this.context(), token);
+		IMendixObject decodedJWT = jwtDecoder.verifyAndDecodeToObject(secret, algorithm, claimsToVerify, publicKey, leeway);
+		return decodedJWT;
 		// END USER CODE
 	}
 

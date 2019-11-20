@@ -9,23 +9,9 @@
 
 package jwt.actions;
 
-import java.io.UnsupportedEncodingException;
-import java.security.interfaces.RSAPublicKey;
-import java.util.Base64;
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.auth0.jwt.interfaces.DecodedJWT;
-import com.auth0.jwt.interfaces.Verification;
-import com.mendix.core.Core;
-import com.mendix.logging.ILogNode;
-import com.mendix.systemwideinterfaces.core.DataValidationRuntimeException;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.webui.CustomJavaAction;
-import jwt.helpers.AlgorithmParser;
-import jwt.helpers.RSAKeyPairReader;
-import jwt.proxies.constants.Constants;
+import jwt.usecases.JWTDecoder;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
 
 /**
@@ -36,16 +22,19 @@ public class DecodeVerifyJWTPlainText extends CustomJavaAction<IMendixObject>
 	private java.lang.String token;
 	private java.lang.String secret;
 	private jwt.proxies.ENU_Algorithm algorithm;
+	private IMendixObject __claimsToVerify;
+	private jwt.proxies.JWT claimsToVerify;
 	private IMendixObject __publicKey;
 	private jwt.proxies.JWTRSAPublicKey publicKey;
 	private java.lang.Long leeway;
 
-	public DecodeVerifyJWTPlainText(IContext context, java.lang.String token, java.lang.String secret, java.lang.String algorithm, IMendixObject publicKey, java.lang.Long leeway)
+	public DecodeVerifyJWTPlainText(IContext context, java.lang.String token, java.lang.String secret, java.lang.String algorithm, IMendixObject claimsToVerify, IMendixObject publicKey, java.lang.Long leeway)
 	{
 		super(context);
 		this.token = token;
 		this.secret = secret;
 		this.algorithm = algorithm == null ? null : jwt.proxies.ENU_Algorithm.valueOf(algorithm);
+		this.__claimsToVerify = claimsToVerify;
 		this.__publicKey = publicKey;
 		this.leeway = leeway;
 	}
@@ -53,55 +42,13 @@ public class DecodeVerifyJWTPlainText extends CustomJavaAction<IMendixObject>
 	@java.lang.Override
 	public IMendixObject executeAction() throws Exception
 	{
+		this.claimsToVerify = __claimsToVerify == null ? null : jwt.proxies.JWT.initialize(getContext(), __claimsToVerify);
+
 		this.publicKey = __publicKey == null ? null : jwt.proxies.JWTRSAPublicKey.initialize(getContext(), __publicKey);
 
 		// BEGIN USER CODE
-		ILogNode logger = Core.getLogger(Constants.getLOGNODE());
-		
-		if (this.token == null || this.token.equals("")) {
-			logger.error("Cannot decode an empty token.");
-			throw new DataValidationRuntimeException("Cannot decode an empty token.");
-		}
-		
-		if (this.algorithm == null) {
-			logger.error("Cannot decode token using an empty algorithm.");
-			throw new DataValidationRuntimeException("Cannot decode token using an empty algorithm.");
-		}
-		
-		RSAPublicKey rsaPublicKey = null;
-		
-		if(publicKey != null) {
-			RSAKeyPairReader rsaKeyPairReader = new RSAKeyPairReader();
-			rsaPublicKey = rsaKeyPairReader.getPublicKey(this.context(), publicKey);
-		}
-		
-		DecodedJWT jwt = null;
-		
-		try {
-			Algorithm alg = new AlgorithmParser().parseAlgorithm(algorithm, secret, rsaPublicKey, null);
-			logger.debug("Starting to decode JWT token with algorithm " + alg.getName() + ".");
-			
-			Verification verification = JWT.require(alg).acceptLeeway(leeway);
-			
-			JWTVerifier verifier = verification.build();
-			jwt = verifier.verify(token);
-			
-			logger.debug("Verifying token successfull.");
-		} catch (UnsupportedEncodingException exception){
-		    logger.error("Token encoding unsupported.", exception);
-		    throw exception;
-		} catch (JWTVerificationException exception){
-			logger.info("Verification of token signature/claims failed: " + exception.getMessage());
-			throw exception;
-		}
-		
-		String header = new String(Base64.getDecoder().decode(jwt.getHeader()));
-		String payload = new String(Base64.getDecoder().decode(jwt.getPayload()));
-		
-		IMendixObject jwtPlainText = Core.instantiate(this.context(), "JWT.JWTPlainText");
-		jwtPlainText.setValue(this.context(), "Header", header);
-		jwtPlainText.setValue(this.context(), "Payload", payload);
-		
+		JWTDecoder jwtDecoder = new JWTDecoder(this.context(), token);
+		IMendixObject jwtPlainText = jwtDecoder.verifyAndDecodePlainText(secret, algorithm, claimsToVerify, publicKey, leeway);
 		return jwtPlainText;
 		// END USER CODE
 	}
