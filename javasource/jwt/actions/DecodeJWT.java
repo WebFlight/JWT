@@ -12,16 +12,7 @@ package jwt.actions;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.webui.CustomJavaAction;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
-import com.mendix.systemwideinterfaces.core.DataValidationRuntimeException;
-import com.auth0.jwt.interfaces.DecodedJWT;
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.exceptions.JWTDecodeException;
-import com.mendix.core.Core;
-import com.mendix.logging.ILogNode;
-import jwt.proxies.constants.Constants;
 import jwt.usecases.JWTDecoder;
-import jwt.helpers.DecodedJWTParser;
-import jwt.helpers.OutputType;
 
 /**
  * Decodes a JWT string into a JWT object. Throws an exception when the token could not be decoded.
@@ -41,8 +32,7 @@ public class DecodeJWT extends CustomJavaAction<IMendixObject>
 	{
 		// BEGIN USER CODE
 		JWTDecoder jwtDecoder = new JWTDecoder(this.context(), token);
-		IMendixObject jwt = jwtDecoder.decode(false, OutputType.JWT_OBJECT);
-		return jwt;
+		return jwtDecoder.decodeToObject();
 		// END USER CODE
 	}
 

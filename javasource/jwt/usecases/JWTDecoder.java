@@ -9,7 +9,6 @@ import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
 
 import jwt.helpers.DecodedJWTParser;
-import jwt.helpers.OutputType;
 import jwt.proxies.constants.Constants;
 
 public class JWTDecoder {
@@ -24,14 +23,9 @@ public class JWTDecoder {
 		this.token = token;
 	}
 	
-	public IMendixObject decode(boolean verifyToken, OutputType outputType) {
+	public IMendixObject decodeToObject() {
 		validateInput();
-		
-		if (outputType.equals(OutputType.JWT_OBJECT)) {
-			return getDecodedJWTObject();
-		}
-		
-		return null;
+		return getDecodedJWTObject();
 	}
 	
 	private void validateInput() {
