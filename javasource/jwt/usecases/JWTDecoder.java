@@ -5,6 +5,7 @@ import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
+import java.util.Base64;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
@@ -47,6 +48,13 @@ public class JWTDecoder {
 		validateAlgorithm(algorithm);
 		verify(secret, algorithm, claimsToVerify, publicKey, leeway);
 		return getDecodedJWTObject();
+	}
+	
+	public IMendixObject verifyAndDecodePlainText(String secret, ENU_Algorithm algorithm, jwt.proxies.JWT claimsToVerify, jwt.proxies.JWTRSAPublicKey publicKey, Long leeway) {
+		validateToken();
+		validateAlgorithm(algorithm);
+		verify(secret, algorithm, claimsToVerify, publicKey, leeway);
+		return getDecodedJWTPlainText();
 	}
 	
 	private void validateToken() {
@@ -140,6 +148,19 @@ public class JWTDecoder {
 		.getMendixObject();
 		
 		return jwtObject;
+	}
+	
+	private IMendixObject getDecodedJWTPlainText() {
+		DecodedJWT jwt = JWT.decode(token);
+		
+		String header = new String(Base64.getDecoder().decode(jwt.getHeader()));
+		String payload = new String(Base64.getDecoder().decode(jwt.getPayload()));
+		
+		IMendixObject jwtPlainText = Core.instantiate(this.context, "JWT.JWTPlainText");
+		jwtPlainText.setValue(this.context, "Header", header);
+		jwtPlainText.setValue(this.context, "Payload", payload);
+		
+		return jwtPlainText;
 	}
 
 }
