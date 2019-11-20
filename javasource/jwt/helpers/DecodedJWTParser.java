@@ -15,6 +15,7 @@ import com.mendix.systemwideinterfaces.core.IContext;
 import jwt.proxies.Audience;
 import jwt.proxies.JWT;
 import jwt.proxies.PublicClaimResponse;
+import jwt.proxies.PublicClaimResponseArray;
 
 public class DecodedJWTParser {
 	
@@ -92,9 +93,21 @@ public class DecodedJWTParser {
 			if (claim.asDate() != null) {
 				logger.debug("Parse claim " + value + " as Date claim.");
 				publicClaimResponse.setValueDateTime(claim.asDate());
-			}	
-			// Claim has a format that is not yet supported, e.g. an array.
-			if (claim.asString() == null && claim.asBoolean() == null && claim.asInt() == null && claim.asLong() == null && claim.asDouble() == null && claim.asDate() == null){
+			}
+			
+			if (claim.asArray(String.class) != null) {
+				logger.debug("Parse claim " + value + " as String array claim.");
+				String[] arrayValues = claim.asArray(String.class);
+				
+				for (String arrayValue:arrayValues) {
+					PublicClaimResponseArray publicClaimResponseArray = new PublicClaimResponseArray(context);
+					publicClaimResponseArray.setValue(context, arrayValue);
+					publicClaimResponseArray.setPublicClaimResponseArray_PublicClaim(context, publicClaimResponse);
+				}
+			}
+			
+			// Claim has a format that is not yet supported, e.g. an integer array.
+			if (claim.asString() == null && claim.asBoolean() == null && claim.asInt() == null && claim.asLong() == null && claim.asDouble() == null && claim.asDate() == null && claim.asArray(String.class) == null){
 				logger.warn("Could not parse Claim " + value + " while decoding token. Format is not supported.");
 			}
 			
