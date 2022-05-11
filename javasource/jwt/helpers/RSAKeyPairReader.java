@@ -15,6 +15,7 @@ import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.Base64;
 
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
 import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
@@ -28,39 +29,47 @@ import jwt.proxies.JWTRSAPublicKey;
 public class RSAKeyPairReader {
 	
 	public RSAPublicKey getPublicKey(IContext context, JWTRSAPublicKey publicKeyObject) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
-		try (	InputStream inputStream = Core.getFileDocumentContent(context, publicKeyObject.getMendixObject());
-				ByteArrayOutputStream buffer = new ByteArrayOutputStream();) {
-		    
-			PublicKey publicKey = null;
-			byte[] encodedPublicKey = inputStreamToByteArray(inputStream, buffer);
-			
-			try {
-				CertificateFactory fact = CertificateFactory.getInstance("X.509");
-				X509Certificate cer = (X509Certificate) fact.generateCertificate(new ByteArrayInputStream(encodedPublicKey));
-				publicKey = cer.getPublicKey();
-			} catch (CertificateException e) {
-				KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-				X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(encodedPublicKey);
-				publicKey = keyFactory.generatePublic(publicKeySpec);
-			}
-			
-			return (RSAPublicKey) publicKey;
+		byte[] encodedPublicKey;
+		PublicKey publicKey = null;
+		
+		if (publicKeyObject.getKeyContents() != null && !publicKeyObject.getKeyContents().isEmpty()) {
+			encodedPublicKey = Base64.getDecoder().decode(publicKeyObject.getKeyContents());
+		} else {
+			InputStream inputStream = Core.getFileDocumentContent(context, publicKeyObject.getMendixObject());
+			ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+			encodedPublicKey = inputStreamToByteArray(inputStream, buffer);
 		}
+		
+		try {
+			CertificateFactory fact = CertificateFactory.getInstance("X.509");
+			X509Certificate cer = (X509Certificate) fact.generateCertificate(new ByteArrayInputStream(encodedPublicKey));
+			publicKey = cer.getPublicKey();
+		} catch (CertificateException e) {
+			KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+			X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(encodedPublicKey);
+			publicKey = keyFactory.generatePublic(publicKeySpec);
+		}
+		
+		return (RSAPublicKey) publicKey;
 	}
 	
 	public RSAPrivateKey getPrivateKey(IContext context, JWTRSAPrivateKey privateKeyObject) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
-		try (	InputStream inputStream = Core.getFileDocumentContent(context, privateKeyObject.getMendixObject());
-				ByteArrayOutputStream buffer = new ByteArrayOutputStream();) {
-			
-		    byte[] encodedPrivateKey = inputStreamToByteArray(inputStream, buffer);
-			
-			PrivateKeyInfo privateKeyInfo = PrivateKeyInfo.getInstance(encodedPrivateKey);
-			
-			JcaPEMKeyConverter jcaPEMKeyConverter = new JcaPEMKeyConverter();
-			PrivateKey privateKey = jcaPEMKeyConverter.getPrivateKey(privateKeyInfo);
-			
-			return (RSAPrivateKey) privateKey;
+		byte[] encodedPrivateKey;
+		
+		if (privateKeyObject.getKeyContents() != null && !privateKeyObject.getKeyContents().isEmpty()) {
+			encodedPrivateKey = Base64.getDecoder().decode(privateKeyObject.getKeyContents());
+		} else {
+			InputStream inputStream = Core.getFileDocumentContent(context, privateKeyObject.getMendixObject());
+			ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+			encodedPrivateKey = inputStreamToByteArray(inputStream, buffer);
 		}
+			
+		PrivateKeyInfo privateKeyInfo = PrivateKeyInfo.getInstance(encodedPrivateKey);
+		
+		JcaPEMKeyConverter jcaPEMKeyConverter = new JcaPEMKeyConverter();
+		PrivateKey privateKey = jcaPEMKeyConverter.getPrivateKey(privateKeyInfo);
+		
+		return (RSAPrivateKey) privateKey;
 	}
 	
 	public byte[] inputStreamToByteArray(InputStream inputStream, ByteArrayOutputStream buffer) throws IOException {
