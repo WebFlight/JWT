@@ -87,7 +87,7 @@ public class RSAKeyPairGenerator {
 		Date currentDate = new Date(System.currentTimeMillis());
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(currentDate);
-		calendar.add(Calendar.YEAR, 3);
+		calendar.add(Calendar.YEAR, validity);
 		Date futureDate = calendar.getTime();
 		
 		X509v3CertificateBuilder certBuilder = new X509v3CertificateBuilder(x500NameIssuer, new BigInteger("1234"), currentDate, futureDate, x500NameSubject, spkInfo);
