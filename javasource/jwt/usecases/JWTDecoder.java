@@ -25,6 +25,7 @@ import jwt.helpers.DecodedJWTParser;
 import jwt.helpers.RSAKeyPairReader;
 import jwt.proxies.ENU_Algorithm;
 import jwt.proxies.constants.Constants;
+import java.nio.charset.StandardCharsets;
 
 public class JWTDecoder {
 	
@@ -162,16 +163,45 @@ public class JWTDecoder {
 		
 		return jwtObject;
 	}
-	
-	private IMendixObject getDecodedJWTPlainText(DecodedJWT jwt) {
-		String header = new String(Base64.getDecoder().decode(jwt.getHeader()));
-		String payload = new String(Base64.getDecoder().decode(jwt.getPayload()));
+
+private String sanitizeBase64String(String base64String) {
+	String sanitizedString = base64String.replace('+', '-').replace('/', '_');
+	int padding = sanitizedString.length() % 4;
+
+	if (padding > 0) {
+		sanitizedString += "====".substring(padding);
+	}
+
+	return sanitizedString;
+}
+
+
+private IMendixObject getDecodedJWTPlainText(DecodedJWT jwt) {
+	try {
+		logger.debug("Decoding JWT plain text...");
 		
+		String sanitizedHeader = sanitizeBase64String(jwt.getHeader());
+		String sanitizedPayload = sanitizeBase64String(jwt.getPayload());
+		
+		logger.debug("Sanitized header: " + sanitizedHeader);
+		logger.debug("Sanitized payload: " + sanitizedPayload);
+
+		String header = new String(Base64.getUrlDecoder().decode(sanitizedHeader), StandardCharsets.UTF_8);
+		String payload = new String(Base64.getUrlDecoder().decode(sanitizedPayload), StandardCharsets.UTF_8);
+
+
+		logger.debug("Decoded header: " + header);
+		logger.debug("Decoded payload: " + payload);
+
 		IMendixObject jwtPlainText = Core.instantiate(this.context, "JWT.JWTPlainText");
 		jwtPlainText.setValue(this.context, "Header", header);
 		jwtPlainText.setValue(this.context, "Payload", payload);
-		
-		return jwtPlainText;
-	}
 
+		logger.debug("Decoding JWT plain text successful.");
+		return jwtPlainText;
+	} catch (Exception e) {
+		logger.error("Error while decoding JWT plain text: ", e);
+		throw new RuntimeException("Error while decoding JWT plain text: ", e);
+	}
+}
 }
