@@ -38,7 +38,7 @@ public class ConvertDERtoPEM extends CustomJavaAction<java.lang.String>
 	@java.lang.Override
 	public java.lang.String executeAction() throws Exception
 	{
-		this.derKey = __derKey == null ? null : system.proxies.FileDocument.initialize(getContext(), __derKey);
+		this.derKey = this.__derKey == null ? null : system.proxies.FileDocument.initialize(getContext(), __derKey);
 
 		// BEGIN USER CODE
 		derKey.getClass();
@@ -73,6 +73,7 @@ public class ConvertDERtoPEM extends CustomJavaAction<java.lang.String>
 
 	/**
 	 * Returns a string representation of this action
+	 * @return a string representation of this action
 	 */
 	@java.lang.Override
 	public java.lang.String toString()

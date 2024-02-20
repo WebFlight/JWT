@@ -58,9 +58,9 @@ public class GenerateJWT extends CustomJavaAction<java.lang.String>
 	@java.lang.Override
 	public java.lang.String executeAction() throws Exception
 	{
-		this.jwtObject = __jwtObject == null ? null : jwt.proxies.JWT.initialize(getContext(), __jwtObject);
+		this.jwtObject = this.__jwtObject == null ? null : jwt.proxies.JWT.initialize(getContext(), __jwtObject);
 
-		this.privateKey = __privateKey == null ? null : jwt.proxies.JWTRSAPrivateKey.initialize(getContext(), __privateKey);
+		this.privateKey = this.__privateKey == null ? null : jwt.proxies.JWTRSAPrivateKey.initialize(getContext(), __privateKey);
 
 		// BEGIN USER CODE
 		ILogNode logger = Core.getLogger(Constants.getLOGNODE());
@@ -159,6 +159,7 @@ public class GenerateJWT extends CustomJavaAction<java.lang.String>
 
 	/**
 	 * Returns a string representation of this action
+	 * @return a string representation of this action
 	 */
 	@java.lang.Override
 	public java.lang.String toString()

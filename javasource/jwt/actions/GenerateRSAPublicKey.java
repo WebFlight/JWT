@@ -48,7 +48,7 @@ public class GenerateRSAPublicKey extends CustomJavaAction<IMendixObject>
 	@java.lang.Override
 	public IMendixObject executeAction() throws Exception
 	{
-		this.privateKey = __privateKey == null ? null : jwt.proxies.JWTRSAPrivateKey.initialize(getContext(), __privateKey);
+		this.privateKey = this.__privateKey == null ? null : jwt.proxies.JWTRSAPrivateKey.initialize(getContext(), __privateKey);
 
 		// BEGIN USER CODE
 		KeyFactory keyFactory = KeyFactory.getInstance("RSA");
@@ -67,6 +67,7 @@ public class GenerateRSAPublicKey extends CustomJavaAction<IMendixObject>
 
 	/**
 	 * Returns a string representation of this action
+	 * @return a string representation of this action
 	 */
 	@java.lang.Override
 	public java.lang.String toString()
