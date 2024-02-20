@@ -2,6 +2,7 @@
 
 Welcome to the Mendix JWT (JSON Web Token) module. This module can be used in [Mendix](http://www.mendix.com) apps to generate and decode JWT tokens. The app uses the com.auth0/java-jwt/3.8.0 library. JSON Web Tokens are often used to perform token authentication in web services. Try it at [JWT.io](https://jwt.io)!
 
+Contributed to the community by Ciphix - Webflight has been acquired by Ciphix per 2024!
 ![JWT logo][1]
 
 ## Related resources
@@ -73,8 +74,10 @@ The JWT module implements the auth0/java-jwt library, which has the following de
 	- com.fasterxml.jackson.core/jackson-annotations
 	- com.fasterxml.jackson.core/jackson-core
 * commons-codec/commons-codec
-* org.bouncycastle/bcpkix-jdk15on
-* org.bouncycastle/bcprov-jdk15on
+* org.bouncycastle/bcpkix-jdk18on
+* org.bouncycastle/bcprov-jdk18on
+* org.bouncycastle/bcutil-jdk18on
+
 
 Dependency conflicts have been reported in combination with org.apache.servicemix.bundles.commons-codec-1.3.0.
 

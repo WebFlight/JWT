@@ -42,9 +42,9 @@ public class DecodeVerifyJWT extends CustomJavaAction<IMendixObject>
 	@java.lang.Override
 	public IMendixObject executeAction() throws Exception
 	{
-		this.claimsToVerify = __claimsToVerify == null ? null : jwt.proxies.JWT.initialize(getContext(), __claimsToVerify);
+		this.claimsToVerify = this.__claimsToVerify == null ? null : jwt.proxies.JWT.initialize(getContext(), __claimsToVerify);
 
-		this.publicKey = __publicKey == null ? null : jwt.proxies.JWTRSAPublicKey.initialize(getContext(), __publicKey);
+		this.publicKey = this.__publicKey == null ? null : jwt.proxies.JWTRSAPublicKey.initialize(getContext(), __publicKey);
 
 		// BEGIN USER CODE
 		JWTDecoder jwtDecoder = new JWTDecoder(this.context(), token);
@@ -55,6 +55,7 @@ public class DecodeVerifyJWT extends CustomJavaAction<IMendixObject>
 
 	/**
 	 * Returns a string representation of this action
+	 * @return a string representation of this action
 	 */
 	@java.lang.Override
 	public java.lang.String toString()
